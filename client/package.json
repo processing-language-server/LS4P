@@ -1,0 +1,25 @@
+{
+	"name": "processing-lsp-client",
+	"description": "A client that consumes Processing Language Server",
+	"author": "Syam Sundar K",
+	"license": "MIT",
+	"version": "0.0.1",
+	"publisher": "Processing",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/processing-language-server/LS4P"
+	},
+	"engines": {
+		"vscode": "^1.23.0"
+	},
+	"scripts": {
+		"update-vscode": "vscode-install",
+		"postinstall": "vscode-install"
+	},
+	"dependencies": {
+		"vscode-languageclient": "^4.1.4"
+	},
+	"devDependencies": {
+		"vscode": "^1.1.34"
+	}
+}
