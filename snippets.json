@@ -1,0 +1,14 @@
+{
+    "Initialize Processing Sketch": {
+		"prefix": "setup()",
+		"body": [
+			"void setup(){",
+				"$1",
+			"}",
+			"void draw(){",
+				"$2",
+			"}"
+		],
+		"description": "Initialize Processing Sketch"
+	}
+}

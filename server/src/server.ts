@@ -152,12 +152,14 @@ connection.onCompletion(
 	(_textDocumentPosition: TextDocumentPositionParams): CompletionItem[] => {
 		return [
 			{
-				label: 'setup()',
+				// Sample Completion Item 1
+				label: 'int',
 				kind: CompletionItemKind.Text,
 				data: 1
 			},
 			{
-				label: 'draw()',
+				// Sample Completion Item 2
+				label: 'float',
 				kind: CompletionItemKind.Text,
 				data: 2
 			}
@@ -168,11 +170,13 @@ connection.onCompletion(
 connection.onCompletionResolve(
 	(item: CompletionItem): CompletionItem => {
 		if (item.data === 1) {
-			item.detail = 'SetUp details';
-			item.documentation = 'Callback that gets invoked only once, during initialization of sketch.';
+			// Sample Item 1's details
+			item.detail = 'int details';
+			item.documentation = 'Used to declare a variable of type Integer';
 		} else if (item.data === 2) {
-			item.detail = 'Draw details';
-			item.documentation = 'Callback that gets invoked for refreshing every frame => Looping callback.';
+			// Sample Item 2's details
+			item.detail = 'float details';
+			item.documentation = 'Used to declare a floating point variable';
 		}
 		return item;
 	}

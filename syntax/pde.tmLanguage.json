@@ -1,0 +1,36 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "processing",
+	"patterns": [
+		{
+			"include": "#keywords"
+		},
+		{
+			"include": "#strings"
+		},
+		{
+			"match": "\\b(byte|short|int|long|char|float|double|boolean|void)\\b",
+			"name": "keyword.other.type"
+		}
+	],
+	"repository": {
+		"keywords": {
+			"patterns": [{
+				"name": "keyword.control.processing",
+				"match": "\\b(if|while|for|return|setup|draw)\\b"
+			}]
+		},
+		"strings": {
+			"name": "string.quoted.double.processing",
+			"begin": "\"",
+			"end": "\"",
+			"patterns": [
+				{
+					"name": "constant.character.escape.processing",
+					"match": "\\\\."
+				}
+			]
+		}
+	},
+	"scopeName": "source.pde"
+}

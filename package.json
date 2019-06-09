@@ -17,13 +17,22 @@
 		"vscode": "^1.23.0"
 	},
 	"activationEvents": [
-		"onLanguage:plaintext"
+		"onLanguage:processing"
 	],
 	"main": "./client/out/extension",
 	"contributes": {
+		"languages": [
+			{
+				"id": "processing",
+				"extensions": [
+					".pde"
+				],
+				"configuration": "./language-configuration.json"
+			}
+		],
 		"configuration": {
 			"type": "object",
-			"title": "Example configuration",
+			"title": "Processing configuration",
 			"properties": {
 				"languageServerExample.maxNumberOfProblems": {
 					"scope": "resource",
@@ -43,14 +52,26 @@
 					"description": "Traces the communication between VS Code and the language server."
 				}
 			}
-		}
+		},
+		"grammars": [
+			{
+				"language": "processing",
+				"scopeName": "source.pde",
+				"path": "./syntax/pde.tmLanguage.json"
+			}
+		],
+		"snippets": [
+			{
+				"language": "processing",
+				"path": "./snippets.json"
+			}
+		]
 	},
 	"scripts": {
 		"vscode:prepublish": "cd client && npm run update-vscode && cd .. && npm run compile",
 		"compile": "tsc -b",
 		"watch": "tsc -b -w",
-		"postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
-		"test": "sh ./scripts/e2e.sh"
+		"postinstall": "cd client && npm install && cd ../server && npm install && cd .."
 	},
 	"devDependencies": {
 		"@types/mocha": "^5.2.0",
