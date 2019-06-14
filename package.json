@@ -65,6 +65,13 @@
 				"language": "processing",
 				"path": "./snippets.json"
 			}
+		],
+		"iconThemes": [
+			{
+				"id": "processingTheme",
+				"label": "ProcessingTheme",
+				"path": "./fileicons/processing-icon-theme.json"
+			}
 		]
 	},
 	"scripts": {

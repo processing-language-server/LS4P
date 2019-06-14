@@ -7,18 +7,24 @@
 		},
 		{
 			"include": "#strings"
-		},
-		{
-			"match": "\\b(byte|short|int|long|char|float|double|boolean|void)\\b",
-			"name": "keyword.other.type"
 		}
 	],
 	"repository": {
 		"keywords": {
-			"patterns": [{
-				"name": "keyword.control.processing",
-				"match": "\\b(if|while|for|return|setup|draw)\\b"
-			}]
+			"patterns": [
+				{
+					"name": "keyword.control.processing",
+					"match": "\\b(if|while|for|return|setup|draw)\\b"
+				},
+				{
+					"name": "keyword.other.type",
+					"match": "\\b(byte|short|int|long|char|float|double|boolean|void)\\b"
+				},
+				{
+					"name": "keyword.operator.processing",
+					"match": "\\b(\\+|\\-|\\*)\\b"
+				}
+			]
 		},
 		"strings": {
 			"name": "string.quoted.double.processing",
