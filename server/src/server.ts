@@ -12,6 +12,9 @@ import {
 	TextDocumentPositionParams
 } from 'vscode-languageserver';
 
+import * as completion from "./completion"
+import * as javaspecific from "./grammer/terms/javaspecific"
+
 let connection = createConnection(ProposedFeatures.all);
 
 let documents: TextDocuments = new TextDocuments();
@@ -40,6 +43,7 @@ connection.onInitialize((params: InitializeParams) => {
 			textDocumentSync: documents.syncKind,
 			completionProvider: {
 				resolveProvider: true
+				// triggerCharacters: [ '.' ]
 			}
 		}
 	};
@@ -112,7 +116,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 	while ((m = pattern.exec(text)) && problems < settings.maxNumberOfProblems) {
 		problems++;
 		let diagnostic: Diagnostic = {
-			severity: DiagnosticSeverity.Warning,
+			severity: DiagnosticSeverity.Error,
 			range: {
 				start: textDocument.positionAt(m.index),
 				end: textDocument.positionAt(m.index + m[0].length)
@@ -150,20 +154,17 @@ connection.onDidChangeWatchedFiles(_change => {
 
 connection.onCompletion(
 	(_textDocumentPosition: TextDocumentPositionParams): CompletionItem[] => {
-		return [
-			{
-				// Sample Completion Item 1
-				label: 'int',
-				kind: CompletionItemKind.Text,
-				data: 1
-			},
-			{
-				// Sample Completion Item 2
-				label: 'float',
-				kind: CompletionItemKind.Text,
-				data: 2
-			}
-		];
+		let completionItemList: CompletionItem[] = []
+		let sampleInt: number = 0
+		javaspecific.CLASS_BODY_KEYWORDS.forEach(function(value){
+			completionItemList[sampleInt] = completion.asCompletionItem(value, CompletionItemKind.Keyword, sampleInt)
+			sampleInt = sampleInt + 1
+		})
+		javaspecific.METHOD_BODY_KEYWORDS.forEach(function(value){
+			completionItemList[sampleInt] = completion.asCompletionItem(value, CompletionItemKind.Keyword, sampleInt)
+			sampleInt = sampleInt + 1
+		})
+		return completionItemList
 	}
 );
 
@@ -171,12 +172,15 @@ connection.onCompletionResolve(
 	(item: CompletionItem): CompletionItem => {
 		if (item.data === 1) {
 			// Sample Item 1's details
-			item.detail = 'int details';
-			item.documentation = 'Used to declare a variable of type Integer';
+			item.detail = 'Test Details 1';
+			item.documentation = 'Test Documentation 1';
 		} else if (item.data === 2) {
 			// Sample Item 2's details
-			item.detail = 'float details';
-			item.documentation = 'Used to declare a floating point variable';
+			item.detail = 'Test Details 2';
+			item.documentation = 'Test Documentation 2';
+		} else {
+			item.detail = 'Test details Else';
+			item.documentation = 'Test Documentation Else';
 		}
 		return item;
 	}

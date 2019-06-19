@@ -3,10 +3,10 @@
 		"prefix": "setup()",
 		"body": [
 			"void setup(){",
-				"$1",
+			"\t$1",
 			"}",
 			"void draw(){",
-				"$2",
+			"\t$2",
 			"}"
 		],
 		"description": "Initialize Processing Sketch"
@@ -100,7 +100,7 @@
 		"description": "if statement checking for not null"
 	},
 	"trycatch": {
-		"prefix": "try_catch",
+		"prefix": "try catch",
 		"body": [
 			"try {",
 			"\t$1",
@@ -111,7 +111,7 @@
 		"description": "try/catch block"
 	},
 	"tryresources": {
-		"prefix": "try_resources",
+		"prefix": "try resources",
 		"body": [
 			"try ($1) {",
 			"\t$2",
@@ -121,7 +121,7 @@
 		]
 	},
 	"private_method": {
-		"prefix": "private_method",
+		"prefix": "private method",
 		"body": [
 			"private ${1:void} ${2:name}($3) {",
 			"\t$0",
@@ -130,7 +130,7 @@
 		"description": "private method"
 	},
 	"Public method": {
-		"prefix": "public_method",
+		"prefix": "public method",
 		"body": [
 			"public ${1:void} ${2:name}(${3}) {",
 			"\t$0",
@@ -139,7 +139,7 @@
 		"description": "public method"
 	},
 	"Private static method": {
-		"prefix": "private_static_method",
+		"prefix": "private static method",
 		"body": [
 			"private static ${1:Type} ${2:name}(${3}) {",
 			"\t$0",
@@ -148,7 +148,7 @@
 		"description": "private static method"
 	},
 	"Public static method": {
-		"prefix": "public_static_method",
+		"prefix": "public static method",
 		"body": [
 			"public static ${1:void} ${2:name}(${3}) {",
 			"\t$0",
@@ -157,7 +157,7 @@
 		"description": "public static method"
 	},
 	"Protected Method": {
-		"prefix": "protected_method",
+		"prefix": "protected method",
 		"body": [
 			"protected ${1:void} ${2:name}(${3}) {",
 			"\t$0",
