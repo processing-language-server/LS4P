@@ -9,7 +9,8 @@ import {
 	DidChangeConfigurationNotification,
 	CompletionItem,
 	CompletionItemKind,
-	TextDocumentPositionParams
+	TextDocumentPositionParams,
+	Hover
 } from 'vscode-languageserver';
 
 import * as completion from "./completion"
@@ -45,7 +46,8 @@ connection.onInitialize((params: InitializeParams) => {
 			completionProvider: {
 				resolveProvider: true
 				// triggerCharacters: [ '.' ]
-			}
+			},
+			hoverProvider: true
 		}
 	};
 });
@@ -79,7 +81,7 @@ connection.onDidChangeConfiguration(change => {
 		);
 	}
 
-	documents.all().forEach(validateTextDocument);
+	documents.all().forEach(checkforDiagnostics);
 });
 
 function getDocumentSettings(resource: string): Thenable<ExampleSettings> {
@@ -102,10 +104,36 @@ documents.onDidClose(e => {
 });
 
 documents.onDidChangeContent(change => {
-	validateTextDocument(change.document);
+	checkforDiagnostics(change.document);
+	checkforHoverContents(change.document);
 });
 
-async function validateTextDocument(textDocument: TextDocument): Promise<void> {
+async function checkforHoverContents(textDocument: TextDocument): Promise<void>{
+	let text = textDocument.getText();
+	let checkContents = 'setup';
+	let hover : Hover
+
+	if(text.includes(checkContents)){
+		hover = {
+			contents:{
+				language: 'processing',
+				value: 'this is the hover text that appears when you hover over setup'
+			},
+			range: {
+				start: textDocument.positionAt(0),
+				end: textDocument.positionAt(3)
+			}
+		}
+	}
+
+	connection.onHover(
+		(params: TextDocumentPositionParams): Hover => {
+			return hover
+		}
+	)
+}
+
+async function checkforDiagnostics(textDocument: TextDocument): Promise<void> {
 	let settings = await getDocumentSettings(textDocument.uri);
 
 	let text = textDocument.getText();
