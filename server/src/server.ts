@@ -14,6 +14,7 @@ import {
 
 import * as completion from "./completion"
 import * as javaspecific from "./grammer/terms/javaspecific"
+import * as processingspecific from "./grammer/terms/processingspecific"
 
 let connection = createConnection(ProposedFeatures.all);
 
@@ -116,7 +117,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 	while ((m = pattern.exec(text)) && problems < settings.maxNumberOfProblems) {
 		problems++;
 		let diagnostic: Diagnostic = {
-			severity: DiagnosticSeverity.Error,
+			severity: DiagnosticSeverity.Hint,
 			range: {
 				start: textDocument.positionAt(m.index),
 				end: textDocument.positionAt(m.index + m[0].length)
@@ -155,14 +156,22 @@ connection.onDidChangeWatchedFiles(_change => {
 connection.onCompletion(
 	(_textDocumentPosition: TextDocumentPositionParams): CompletionItem[] => {
 		let completionItemList: CompletionItem[] = []
-		let sampleInt: number = 0
+		let _addIncValue: number = 0
 		javaspecific.CLASS_BODY_KEYWORDS.forEach(function(value){
-			completionItemList[sampleInt] = completion.asCompletionItem(value, CompletionItemKind.Keyword, sampleInt)
-			sampleInt = sampleInt + 1
+			completionItemList[_addIncValue] = completion.asCompletionItem(value, CompletionItemKind.Keyword, _addIncValue)
+			_addIncValue += 1
 		})
 		javaspecific.METHOD_BODY_KEYWORDS.forEach(function(value){
-			completionItemList[sampleInt] = completion.asCompletionItem(value, CompletionItemKind.Keyword, sampleInt)
-			sampleInt = sampleInt + 1
+			completionItemList[_addIncValue] = completion.asCompletionItem(value, CompletionItemKind.Keyword, _addIncValue)
+			_addIncValue += 1
+		})
+		processingspecific.PROCESSING_CONVERSIONS.forEach(function(value){
+			completionItemList[_addIncValue] = completion.asCompletionItem(value, CompletionItemKind.Method, _addIncValue)
+			_addIncValue += 1
+		})
+		processingspecific.PROCESSING_CONSTANTS.forEach(function(value){
+			completionItemList[_addIncValue] = completion.asCompletionItem(value, CompletionItemKind.Constant, _addIncValue)
+			_addIncValue += 1
 		})
 		return completionItemList
 	}
@@ -171,11 +180,9 @@ connection.onCompletion(
 connection.onCompletionResolve(
 	(item: CompletionItem): CompletionItem => {
 		if (item.data === 1) {
-			// Sample Item 1's details
 			item.detail = 'Test Details 1';
 			item.documentation = 'Test Documentation 1';
 		} else if (item.data === 2) {
-			// Sample Item 2's details
 			item.detail = 'Test Details 2';
 			item.documentation = 'Test Documentation 2';
 		} else {
