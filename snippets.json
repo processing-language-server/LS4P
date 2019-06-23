@@ -11,28 +11,12 @@
 		],
 		"description": "Initialize Processing Sketch"
 	},
-	"main": {
-		"prefix": "main",
-		"body": [
-			"public static void main(String[] args) {",
-			"\t$0",
-			"}"
-		],
-		"description": "Public static main method"
-	},
 	"sysout": {
 		"prefix": "sysout",
 		"body": [
 			"System.out.println($0);"
 		],
 		"description": "Print to standard out"
-	},
-	"syserr": {
-		"prefix": "syserr",
-		"body": [
-			"System.err.println($0);"
-		],
-		"description": "Print to standard err"
 	},
 	"fori": {
 		"prefix": "fori",
@@ -137,24 +121,6 @@
 			"}"
 		],
 		"description": "public method"
-	},
-	"Private static method": {
-		"prefix": "private static method",
-		"body": [
-			"private static ${1:Type} ${2:name}(${3}) {",
-			"\t$0",
-			"}"
-		],
-		"description": "private static method"
-	},
-	"Public static method": {
-		"prefix": "public static method",
-		"body": [
-			"public static ${1:void} ${2:name}(${3}) {",
-			"\t$0",
-			"}"
-		],
-		"description": "public static method"
 	},
 	"Protected Method": {
 		"prefix": "protected method",

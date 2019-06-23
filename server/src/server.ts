@@ -180,6 +180,7 @@ connection.onDidChangeWatchedFiles(_change => {
 	connection.console.log('We received an file change event');
 });
 
+// Perform auto-completion -> Deligated tp `completion.ts`
 connection.onCompletion(
 	(_textDocumentPosition: TextDocumentPositionParams): CompletionItem[] => {
 		return completion.obtainCompletionList()
