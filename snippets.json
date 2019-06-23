@@ -18,6 +18,57 @@
 		],
 		"description": "Creating a thread"
 	},
+	"dalay":{
+		"prefix": "delay(<int>)",
+		"body":[
+			"delay($0)"
+		],
+		"description": "Add a delay"
+	},
+	"frameRate":{
+		"prefix": "frameRate(<int>)",
+		"body":[
+			"frameRate($0)"
+		],
+		"description": "Fix Frame Rate"
+	},
+	"pixelDensity":{
+		"prefix": "pixelDensity(<int>)",
+		"body":[
+			"pixelDensity($0)"
+		],
+		"description": "Add Pixel Density"
+	},
+	"settings":{
+		"prefix": "settings()",
+		"body":[
+			"void settings(){",
+			"\t$0",
+			"}"
+		],
+		"description": "Apply Settings to the Sketch"
+	},
+	"size2":{
+		"prefix": "size(<int>,<int>)",
+		"body":[
+			"size($0,$1)"
+		],
+		"description": "Fix Size"
+	},
+	"size3":{
+		"prefix": "size(<int>,<int>,<renderer>)",
+		"body":[
+			"size($0,$1,$2)"
+		],
+		"description": "Fix Size along with Renderers"
+	},
+	"smooth":{
+		"prefix": "smooth(<int>)",
+		"body":[
+			"smooth($0)"
+		],
+		"description": "Add Smooth Property"
+	},
 	"main": {
 		"prefix": "main",
 		"body": [

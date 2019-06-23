@@ -104,16 +104,20 @@ export function obtainCompletionList(): lsp.CompletionItem[] {
 	let containAllKeys: string[][] = [
 		javaspecific.CLASS_BODY_KEYWORDS,
 		javaspecific.METHOD_BODY_KEYWORDS,
-		processingspecific.PROCESSING_CONVERSIONS,
-		processingspecific.PROCESSING_CONSTANTS,
-		processingspecific.PROCESSING_STRUCTURE_METHODS
+		processingspecific.P_CONVERSIONS,
+		processingspecific.P_CONSTANTS,
+		processingspecific.P_STRUCTURE_METHODS,
+		processingspecific.P_ENVI_METHODS,
+		processingspecific.P_ENVI_VAR
 	]
 	let overAllCompletiontype: number[] = [
 		14,
 		14,
 		2,
 		21,
-		2
+		2,
+		3,
+		10
 	]
 	containAllKeys.forEach(function(value){
 		value.forEach(function(_){
