@@ -21,3 +21,15 @@ export const PROCESSING_CONSTANTS : string[] = [
 	'TAU',
 	'TWO_PI'
 ]
+
+// Processing Methods
+export const PROCESSING_METHODS : string[] = [
+	'exit()',
+	'loop()',
+	'noLoop()',
+	'pop()',
+	'popStyle()',
+	'push()',
+	'pushStyle()',
+	'redraw()'
+]

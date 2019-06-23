@@ -11,6 +11,13 @@
 		],
 		"description": "Initialize Processing Sketch"
 	},
+	"thread": {
+		"prefix": "thread(<string>)",
+		"body":[
+			"thread($0)"
+		],
+		"description": "Creating a thread"
+	},
 	"main": {
 		"prefix": "main",
 		"body": [

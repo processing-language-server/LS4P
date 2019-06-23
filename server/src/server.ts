@@ -108,6 +108,7 @@ documents.onDidChangeContent(change => {
 	checkforHoverContents(change.document);
 });
 
+// Hover on context - setup
 async function checkforHoverContents(textDocument: TextDocument): Promise<void>{
 	let text = textDocument.getText();
 	let checkContents = 'setup';
@@ -133,6 +134,7 @@ async function checkforHoverContents(textDocument: TextDocument): Promise<void>{
 	)
 }
 
+// Send Diagnostic reports
 async function checkforDiagnostics(textDocument: TextDocument): Promise<void> {
 	let settings = await getDocumentSettings(textDocument.uri);
 
@@ -185,21 +187,29 @@ connection.onCompletion(
 	(_textDocumentPosition: TextDocumentPositionParams): CompletionItem[] => {
 		let completionItemList: CompletionItem[] = []
 		let _addIncValue: number = 0
-		javaspecific.CLASS_BODY_KEYWORDS.forEach(function(value){
-			completionItemList[_addIncValue] = completion.asCompletionItem(value, CompletionItemKind.Keyword, _addIncValue)
-			_addIncValue += 1
-		})
-		javaspecific.METHOD_BODY_KEYWORDS.forEach(function(value){
-			completionItemList[_addIncValue] = completion.asCompletionItem(value, CompletionItemKind.Keyword, _addIncValue)
-			_addIncValue += 1
-		})
-		processingspecific.PROCESSING_CONVERSIONS.forEach(function(value){
-			completionItemList[_addIncValue] = completion.asCompletionItem(value, CompletionItemKind.Method, _addIncValue)
-			_addIncValue += 1
-		})
-		processingspecific.PROCESSING_CONSTANTS.forEach(function(value){
-			completionItemList[_addIncValue] = completion.asCompletionItem(value, CompletionItemKind.Constant, _addIncValue)
-			_addIncValue += 1
+		let _incKeyList: number = 0
+		let containAllKeys: string[][] = [
+			javaspecific.CLASS_BODY_KEYWORDS,
+			javaspecific.METHOD_BODY_KEYWORDS,
+			processingspecific.PROCESSING_CONVERSIONS,
+			processingspecific.PROCESSING_CONSTANTS,
+			processingspecific.PROCESSING_METHODS
+		]
+		let overAllCompletiontype: number[] = [
+			14,
+			14,
+			2,
+			21,
+			2
+		]
+		containAllKeys.forEach(function(value){
+			value.forEach(function(_){
+				completionItemList[_addIncValue] = completion.asCompletionItem(_, 
+					completion.findCompletionItemKind(overAllCompletiontype[_incKeyList]), 
+					_addIncValue)
+				_addIncValue += 1
+			})
+			_incKeyList += 1
 		})
 		return completionItemList
 	}

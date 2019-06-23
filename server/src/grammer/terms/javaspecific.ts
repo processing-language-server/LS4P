@@ -1,4 +1,5 @@
 
+// Java specific top level keywords
 export const TOP_LEVEL_KEYWORDS: string[] = [
 	'package',
 	'import',
@@ -12,6 +13,7 @@ export const TOP_LEVEL_KEYWORDS: string[] = [
 	'implements'
 ];
 
+// Keywords allowed inside class body
 export const CLASS_BODY_KEYWORDS: string[] = [
 	'public',
 	'private',
@@ -32,6 +34,7 @@ export const CLASS_BODY_KEYWORDS: string[] = [
 	'double',
 ];
 
+// Keywords allowed inside Method body
 export const METHOD_BODY_KEYWORDS: string[] = [
 	'new',
 	'assert',
