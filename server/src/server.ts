@@ -8,14 +8,11 @@ import {
 	InitializeParams,
 	DidChangeConfigurationNotification,
 	CompletionItem,
-	CompletionItemKind,
 	TextDocumentPositionParams,
 	Hover
 } from 'vscode-languageserver';
 
 import * as completion from "./completion"
-import * as javaspecific from "./grammer/terms/javaspecific"
-import * as processingspecific from "./grammer/terms/processingspecific"
 
 let connection = createConnection(ProposedFeatures.all);
 
@@ -185,33 +182,7 @@ connection.onDidChangeWatchedFiles(_change => {
 
 connection.onCompletion(
 	(_textDocumentPosition: TextDocumentPositionParams): CompletionItem[] => {
-		let completionItemList: CompletionItem[] = []
-		let _addIncValue: number = 0
-		let _incKeyList: number = 0
-		let containAllKeys: string[][] = [
-			javaspecific.CLASS_BODY_KEYWORDS,
-			javaspecific.METHOD_BODY_KEYWORDS,
-			processingspecific.PROCESSING_CONVERSIONS,
-			processingspecific.PROCESSING_CONSTANTS,
-			processingspecific.PROCESSING_METHODS
-		]
-		let overAllCompletiontype: number[] = [
-			14,
-			14,
-			2,
-			21,
-			2
-		]
-		containAllKeys.forEach(function(value){
-			value.forEach(function(_){
-				completionItemList[_addIncValue] = completion.asCompletionItem(_, 
-					completion.findCompletionItemKind(overAllCompletiontype[_incKeyList]), 
-					_addIncValue)
-				_addIncValue += 1
-			})
-			_incKeyList += 1
-		})
-		return completionItemList
+		return completion.obtainCompletionList()
 	}
 );
 

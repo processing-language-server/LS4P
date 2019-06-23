@@ -1,5 +1,7 @@
 import * as lsp from 'vscode-languageserver';
 import { CompletionItemKind } from 'vscode-languageserver';
+import * as javaspecific from "./grammer/terms/javaspecific"
+import * as processingspecific from "./grammer/terms/processingspecific"
 
 export function asCompletionItem(
 	completionEntry: string, completionType: lsp.CompletionItemKind, data: number): lsp.CompletionItem {
@@ -93,4 +95,34 @@ export function findCompletionItemKind(value: number): lsp.CompletionItemKind{
 			break;
 	}
 	return completionKind
+}
+
+export function obtainCompletionList(): lsp.CompletionItem[] {
+	let completionItemList: lsp.CompletionItem[] = []
+	let _addIncValue: number = 0
+	let _incKeyList: number = 0
+	let containAllKeys: string[][] = [
+		javaspecific.CLASS_BODY_KEYWORDS,
+		javaspecific.METHOD_BODY_KEYWORDS,
+		processingspecific.PROCESSING_CONVERSIONS,
+		processingspecific.PROCESSING_CONSTANTS,
+		processingspecific.PROCESSING_STRUCTURE_METHODS
+	]
+	let overAllCompletiontype: number[] = [
+		14,
+		14,
+		2,
+		21,
+		2
+	]
+	containAllKeys.forEach(function(value){
+		value.forEach(function(_){
+			completionItemList[_addIncValue] = asCompletionItem(_, 
+				findCompletionItemKind(overAllCompletiontype[_incKeyList]), 
+				_addIncValue)
+			_addIncValue += 1
+		})
+		_incKeyList += 1
+	})
+	return completionItemList
 }

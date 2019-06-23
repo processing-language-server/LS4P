@@ -23,7 +23,7 @@ export const PROCESSING_CONSTANTS : string[] = [
 ]
 
 // Processing Methods
-export const PROCESSING_METHODS : string[] = [
+export const PROCESSING_STRUCTURE_METHODS : string[] = [
 	'exit()',
 	'loop()',
 	'noLoop()',
@@ -31,5 +31,7 @@ export const PROCESSING_METHODS : string[] = [
 	'popStyle()',
 	'push()',
 	'pushStyle()',
-	'redraw()'
+	'redraw()',
+	'setup()',
+	'draw()'
 ]
