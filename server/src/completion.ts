@@ -108,16 +108,19 @@ export function obtainCompletionList(): lsp.CompletionItem[] {
 		processingspecific.P_CONSTANTS,
 		processingspecific.P_STRUCTURE_METHODS,
 		processingspecific.P_ENVI_METHODS,
-		processingspecific.P_ENVI_VAR
+		processingspecific.P_ENVI_VAR,
+		processingspecific.P_ARR_FUN
 	]
+	// Corresponding Type for entries in `containAllKeys`
 	let overAllCompletiontype: number[] = [
 		14,
 		14,
 		2,
 		21,
 		2,
-		3,
-		10
+		2,
+		10,
+		2
 	]
 	containAllKeys.forEach(function(value){
 		value.forEach(function(_){

@@ -186,6 +186,7 @@ connection.onCompletion(
 	}
 );
 
+// Completion Resolved suspended for now -> TODO: Refactoring required with real data points
 connection.onCompletionResolve(
 	(item: CompletionItem): CompletionItem => {
 		if (item.data === 1) {
