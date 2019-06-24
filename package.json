@@ -79,5 +79,8 @@
 		"@types/node": "^8.0.0",
 		"tslint": "^5.16.0",
 		"typescript": "^3.5.1"
+	},
+	"dependencies": {
+		"java-ast": "^0.1.0"
 	}
 }
