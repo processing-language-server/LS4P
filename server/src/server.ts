@@ -9,7 +9,8 @@ import {
 	DidChangeConfigurationNotification,
 	CompletionItem,
 	TextDocumentPositionParams,
-	Hover
+	Hover,
+	Position
 } from 'vscode-languageserver';
 
 import * as completion from "./completion"
@@ -21,6 +22,12 @@ let documents: TextDocuments = new TextDocuments();
 let hasConfigurationCapability: boolean = false;
 let hasWorkspaceFolderCapability: boolean = false;
 let hasDiagnosticRelatedInformationCapability: boolean = false;
+
+let initialPositionObj : Position = {
+	line: 0,
+	character: 1
+}
+let currentCursorPosition: Position
 
 connection.onInitialize((params: InitializeParams) => {
 	let capabilities = params.capabilities;
@@ -37,11 +44,13 @@ connection.onInitialize((params: InitializeParams) => {
 		capabilities.textDocument.publishDiagnostics.relatedInformation
 	);
 
+	currentCursorPosition = initialPositionObj
+
 	return {
 		capabilities: {
 			textDocumentSync: documents.syncKind,
 			completionProvider: {
-				resolveProvider: true
+				resolveProvider: true,
 				// triggerCharacters: [ '.' ]
 			},
 			hoverProvider: true
@@ -103,7 +112,19 @@ documents.onDidClose(e => {
 documents.onDidChangeContent(change => {
 	checkforDiagnostics(change.document);
 	checkforHoverContents(change.document);
+	updateCompletionList(change.document);
 });
+
+async function updateCompletionList(textDocument: TextDocument): Promise<void>{
+	let textPosition = textDocument.offsetAt(currentCursorPosition);
+	let text = textDocument.getText();
+	if(text.charAt(textPosition).toString() === '.'){
+		// Produce modular auto-completion results with respect to the preceeding AST Node.
+		completion.cookModularCompletionList()
+	} else {
+		completion.prepareCompletionList()
+	}
+}
 
 // Hover on context - setup
 async function checkforHoverContents(textDocument: TextDocument): Promise<void>{
@@ -183,7 +204,8 @@ connection.onDidChangeWatchedFiles(_change => {
 // Perform auto-completion -> Deligated tp `completion.ts`
 connection.onCompletion(
 	(_textDocumentPosition: TextDocumentPositionParams): CompletionItem[] => {
-		return completion.obtainCompletionList()
+		currentCursorPosition = _textDocumentPosition.position
+		return completion.completionItemList
 	}
 );
 
