@@ -2,8 +2,6 @@ import * as lsp from 'vscode-languageserver';
 import { CompletionItemKind } from 'vscode-languageserver';
 import * as holder from './grammer/holder'
 
-export let completionItemList: lsp.CompletionItem[] = []
-
 export function asCompletionItem(
 	completionEntry: string, completionType: lsp.CompletionItemKind, data: number): lsp.CompletionItem {
 	const item: lsp.CompletionItem = {
@@ -107,16 +105,66 @@ export function cookModularCompletionList(): void {
 	// - `PVector`
 }
 
-export function prepareCompletionList(): void {
+export function prepareCompletionList(): lsp.CompletionItem[] {
+	let completionItemList: lsp.CompletionItem[] = []
 	let _addIncValue: number = 0
 	let _incKeyList: number = 0
 	holder.containAllKeys.forEach(function(value){
 		value.forEach(function(_){
 			completionItemList[_addIncValue] = asCompletionItem(_, 
-				findCompletionItemKind(holder.overAllCompletiontype[_incKeyList]), 
+				findCompletionItemKind(holder.containAllKeysType[_incKeyList]), 
 				_addIncValue)
 			_addIncValue += 1
 		})
 		_incKeyList += 1
 	})
+	return completionItemList
+}
+
+export function generateModular(receivedObjectType: string): lsp.CompletionItem[] {
+	let PObjCompletionItem: lsp.CompletionItem[] = []
+	let _oAddIncValue = 0
+	let _oIncKeyList = 0
+	switch (receivedObjectType) {
+		case "PShape":
+			PObjCompletionItem.length = 0
+			holder.PShapeCompletion.forEach(function(value){
+				value.forEach(function(_){
+					PObjCompletionItem[_oAddIncValue] = asCompletionItem(_, 
+						findCompletionItemKind(holder.PShapeCompletionType[_oIncKeyList]), 
+						_oAddIncValue)
+					_oAddIncValue += 1
+				})
+				_oIncKeyList += 1
+			})
+			break;
+		case "PImage":
+			PObjCompletionItem.length = 0
+			holder.PImageCompletion.forEach(function(value){
+				value.forEach(function(_){
+					PObjCompletionItem[_oAddIncValue] = asCompletionItem(_, 
+						findCompletionItemKind(holder.PImageCompletionType[_oIncKeyList]), 
+						_oAddIncValue)
+					_oAddIncValue += 1
+				})
+				_oIncKeyList += 1
+			})
+			break;
+		case "PVector":
+			PObjCompletionItem.length = 0
+			holder.PVectorCompletion.forEach(function(value){
+				value.forEach(function(_){
+					PObjCompletionItem[_oAddIncValue] = asCompletionItem(_, 
+						findCompletionItemKind(holder.PVectorCompletionType[_oIncKeyList]), 
+						_oAddIncValue)
+					_oAddIncValue += 1
+				})
+				_oIncKeyList += 1
+			})
+			break;
+		default:
+			PObjCompletionItem.length = 0
+			break;
+	}
+	return PObjCompletionItem
 }

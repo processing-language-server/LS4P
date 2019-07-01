@@ -63,6 +63,11 @@ export const METHOD_BODY_KEYWORDS: string[] = [
 	'long',
 	'float',
 	'double',
+	'boolean',
+	'char',
+	'byte',
+	'short',
+	'string'
 ];
 
 

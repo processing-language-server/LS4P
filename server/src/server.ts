@@ -10,7 +10,9 @@ import {
 	CompletionItem,
 	TextDocumentPositionParams,
 	Hover,
-	Position
+	Position,
+	CompletionParams,
+	CompletionContext
 } from 'vscode-languageserver';
 
 import * as completion from "./completion"
@@ -28,6 +30,7 @@ let initialPositionObj : Position = {
 	character: 1
 }
 let currentCursorPosition: Position
+let modularCompletionItemEnabled: Boolean = false
 
 connection.onInitialize((params: InitializeParams) => {
 	let capabilities = params.capabilities;
@@ -51,7 +54,7 @@ connection.onInitialize((params: InitializeParams) => {
 			textDocumentSync: documents.syncKind,
 			completionProvider: {
 				resolveProvider: true,
-				// triggerCharacters: [ '.' ]
+				triggerCharacters: [ '.' ]
 			},
 			hoverProvider: true
 		}
@@ -118,11 +121,13 @@ documents.onDidChangeContent(change => {
 async function updateCompletionList(textDocument: TextDocument): Promise<void>{
 	let textPosition = textDocument.offsetAt(currentCursorPosition);
 	let text = textDocument.getText();
-	if(text.charAt(textPosition).toString() === '.'){
+	if((text.charAt(textPosition).toString() === '.') && !(text.charAt(textPosition-1).toString() === ')')){
 		// Produce modular auto-completion results with respect to the preceeding AST Node.
-		completion.cookModularCompletionList()
+		// completion.cookModularCompletionList()
+		modularCompletionItemEnabled = true
 	} else {
-		completion.prepareCompletionList()
+		// completion.prepareCompletionList()
+		modularCompletionItemEnabled = false
 	}
 }
 
@@ -201,17 +206,24 @@ connection.onDidChangeWatchedFiles(_change => {
 	connection.console.log('We received an file change event');
 });
 
+let requestCompletionContext : CompletionContext = {
+	triggerKind: 1,
+	triggerCharacter: '.',
+}
+
 // Perform auto-completion -> Deligated tp `completion.ts`
 connection.onCompletion(
-	(_textDocumentPosition: TextDocumentPositionParams): CompletionItem[] => {
-		currentCursorPosition = _textDocumentPosition.position
-		return completion.completionItemList
+	(_textDocumentParams: CompletionParams): CompletionItem[] => {
+		_textDocumentParams.context = requestCompletionContext
+		currentCursorPosition = _textDocumentParams.position
+		return modularCompletionItemEnabled ? completion.generateModular("PImage") : completion.prepareCompletionList()
 	}
 );
 
 // Completion Resolved suspended for now -> TODO: Refactoring required with real data points
 connection.onCompletionResolve(
 	(item: CompletionItem): CompletionItem => {
+		// use `item.label`
 		if (item.data === 1) {
 			item.detail = 'Test Details 1';
 			item.documentation = 'Test Documentation 1';

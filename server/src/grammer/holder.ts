@@ -1,5 +1,6 @@
 import * as _j from "./terms/javaspecific"
 import * as _p from "./terms/processingspecific"
+import * as _o from "./objectTerms/PObjectCompletion"
 
 export const containAllKeys: string[][] = [
 	_j.METHOD_BODY_KEYWORDS,
@@ -48,7 +49,7 @@ export const containAllKeys: string[][] = [
 	_p.P_RANDOM
 ]
 // Corresponding Type for entries in `containAllKeys`
-export const overAllCompletiontype: number[] = [
+export const containAllKeysType: number[] = [
 	14,
 	2,
 	21,
@@ -93,5 +94,32 @@ export const overAllCompletiontype: number[] = [
 	7,
 	2,
 	2
+]
 
+export const PShapeCompletion: string[][] = [
+	_o.PShapeMethods,
+	_o.PShapeVal
+]
+
+export const PShapeCompletionType: number[] = [
+	2,
+	10
+]
+
+export const PImageCompletion: string[][] = [
+	_o.PImageMethods,
+	_o.PImageVal
+]
+
+export const PImageCompletionType: number [] = [
+	2,
+	12
+]
+
+export const PVectorCompletion: string[][] = [
+	_o.PVectorMethods
+]
+
+export const PVectorCompletionType: number[] = [
+	2
 ]
