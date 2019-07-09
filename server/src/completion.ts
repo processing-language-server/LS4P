@@ -1,6 +1,43 @@
 import * as lsp from 'vscode-languageserver';
 import { CompletionItemKind } from 'vscode-languageserver';
 import * as Constants from './processing/parse/constants'
+const exec = require('child_process').execSync;
+const fs = require('fs');
+
+exec(`unzip -f ${__dirname.substring(0,__dirname.length-4)}/src/processing/jar/core.jar -d ${__dirname}/processing/extractor`)
+exec(`ls ${__dirname}/processing/extractor/processing/core | tee ${__dirname.substring(0,__dirname.length-4)}/src/processing/container/core.txt`)
+exec(`ls ${__dirname}/processing/extractor/processing/awt | tee ${__dirname.substring(0,__dirname.length-4)}/src/processing/container/awt.txt`)
+exec(`ls ${__dirname}/processing/extractor/processing/data | tee ${__dirname.substring(0,__dirname.length-4)}/src/processing/container/data.txt`)
+exec(`ls ${__dirname}/processing/extractor/processing/event | tee ${__dirname.substring(0,__dirname.length-4)}/src/processing/container/event.txt`)
+exec(`ls ${__dirname}/processing/extractor/processing/javafx | tee ${__dirname.substring(0,__dirname.length-4)}/src/processing/container/javafx.txt`)
+exec(`ls ${__dirname}/processing/extractor/processing/opengl | tee ${__dirname.substring(0,__dirname.length-4)}/src/processing/container/opengl.txt`)
+
+let extractionModules = [
+	`${__dirname.substring(0,__dirname.length-4)}/src/processing/container/core.txt`, 
+	`${__dirname.substring(0,__dirname.length-4)}/src/processing/container/awt.txt`, 
+	`${__dirname.substring(0,__dirname.length-4)}/src/processing/container/data.txt`, 
+	`${__dirname.substring(0,__dirname.length-4)}/src/processing/container/event.txt`, 
+	`${__dirname.substring(0,__dirname.length-4)}/src/processing/container/javafx.txt`, 
+	`${__dirname.substring(0,__dirname.length-4)}/src/processing/container/opengl.txt`
+]
+
+let coreClass: String[][] = []
+
+for(let _counter: number = 0; _counter<6; _counter++){
+	try {  
+		let data = fs.readFileSync(extractionModules[_counter], 'utf-8')
+		let tempSplit = data.split('\n')
+		let tempCheck: String[] = []
+		let _innerCounter = 0
+		tempSplit.forEach(function(className: any){
+			if(!className.includes('$') && className.includes('.class')){
+				tempCheck[_innerCounter] = className
+				_innerCounter += 1
+			}
+		})
+		coreClass[_counter] = tempCheck
+	} catch(e) {}
+}
 
 export function asCompletionItem(
 	completionEntry: string, completionType: lsp.CompletionItemKind, data: number): lsp.CompletionItem {
