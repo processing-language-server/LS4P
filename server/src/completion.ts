@@ -5,25 +5,34 @@ const exec = require('child_process').execSync;
 const fs = require('fs');
 
 exec(`unzip -f ${__dirname.substring(0,__dirname.length-4)}/src/processing/jar/core.jar -d ${__dirname}/processing/extractor`)
-exec(`ls ${__dirname}/processing/extractor/processing/core | tee ${__dirname.substring(0,__dirname.length-4)}/src/processing/container/core.txt`)
-exec(`ls ${__dirname}/processing/extractor/processing/awt | tee ${__dirname.substring(0,__dirname.length-4)}/src/processing/container/awt.txt`)
-exec(`ls ${__dirname}/processing/extractor/processing/data | tee ${__dirname.substring(0,__dirname.length-4)}/src/processing/container/data.txt`)
-exec(`ls ${__dirname}/processing/extractor/processing/event | tee ${__dirname.substring(0,__dirname.length-4)}/src/processing/container/event.txt`)
-exec(`ls ${__dirname}/processing/extractor/processing/javafx | tee ${__dirname.substring(0,__dirname.length-4)}/src/processing/container/javafx.txt`)
-exec(`ls ${__dirname}/processing/extractor/processing/opengl | tee ${__dirname.substring(0,__dirname.length-4)}/src/processing/container/opengl.txt`)
+exec(`ls ${__dirname}/processing/extractor/processing/core | tee ${__dirname}/processing/container/core.txt`)
+exec(`ls ${__dirname}/processing/extractor/processing/awt | tee ${__dirname}/processing/container/awt.txt`)
+exec(`ls ${__dirname}/processing/extractor/processing/data | tee ${__dirname}/processing/container/data.txt`)
+exec(`ls ${__dirname}/processing/extractor/processing/event | tee ${__dirname}/processing/container/event.txt`)
+exec(`ls ${__dirname}/processing/extractor/processing/javafx | tee ${__dirname}/processing/container/javafx.txt`)
+exec(`ls ${__dirname}/processing/extractor/processing/opengl | tee ${__dirname}/processing/container/opengl.txt`)
 
 let extractionModules = [
-	`${__dirname.substring(0,__dirname.length-4)}/src/processing/container/core.txt`, 
-	`${__dirname.substring(0,__dirname.length-4)}/src/processing/container/awt.txt`, 
-	`${__dirname.substring(0,__dirname.length-4)}/src/processing/container/data.txt`, 
-	`${__dirname.substring(0,__dirname.length-4)}/src/processing/container/event.txt`, 
-	`${__dirname.substring(0,__dirname.length-4)}/src/processing/container/javafx.txt`, 
-	`${__dirname.substring(0,__dirname.length-4)}/src/processing/container/opengl.txt`
+	`${__dirname}/processing/container/core.txt`, 
+	`${__dirname}/processing/container/awt.txt`, 
+	`${__dirname}/processing/container/data.txt`, 
+	`${__dirname}/processing/container/event.txt`, 
+	`${__dirname}/processing/container/javafx.txt`, 
+	`${__dirname}/processing/container/opengl.txt`
 ]
 
-let coreClass: String[][] = []
+let extractionModuleType = [
+	'CORE',
+	'AWT',
+	'DATA',
+	'EVENT',
+	'JAVAFX',
+	'OPENGL'
+]
 
-for(let _counter: number = 0; _counter<6; _counter++){
+let classMap = new Map()
+
+for(let _counter: number = 0; _counter < 6; _counter++){
 	try {  
 		let data = fs.readFileSync(extractionModules[_counter], 'utf-8')
 		let tempSplit = data.split('\n')
@@ -35,7 +44,7 @@ for(let _counter: number = 0; _counter<6; _counter++){
 				_innerCounter += 1
 			}
 		})
-		coreClass[_counter] = tempCheck
+		classMap.set(extractionModuleType[_counter], tempCheck)
 	} catch(e) {}
 }
 
