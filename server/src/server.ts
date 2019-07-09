@@ -29,8 +29,8 @@ let initialPositionObj : Position = {
 	line: 0,
 	character: 1
 }
-let currentCursorPosition: Position
-let modularCompletionItemEnabled: Boolean = false
+// let currentCursorPosition: Position
+// let modularCompletionItemEnabled: Boolean = false
 
 connection.onInitialize((params: InitializeParams) => {
 	let capabilities = params.capabilities;
@@ -47,7 +47,7 @@ connection.onInitialize((params: InitializeParams) => {
 		capabilities.textDocument.publishDiagnostics.relatedInformation
 	);
 
-	currentCursorPosition = initialPositionObj
+	// currentCursorPosition = initialPositionObj
 
 	return {
 		capabilities: {
@@ -115,21 +115,21 @@ documents.onDidClose(e => {
 documents.onDidChangeContent(change => {
 	checkforDiagnostics(change.document);
 	checkforHoverContents(change.document);
-	updateCompletionList(change.document);
+	// updateCompletionList(change.document);
 });
 
-async function updateCompletionList(textDocument: TextDocument): Promise<void>{
-	let textPosition = textDocument.offsetAt(currentCursorPosition);
-	let text = textDocument.getText();
-	if((text.charAt(textPosition).toString() === '.') && !(text.charAt(textPosition-1).toString() === ')')){
-		// Produce modular auto-completion results with respect to the preceeding AST Node.
-		// completion.cookModularCompletionList()
-		modularCompletionItemEnabled = true
-	} else {
-		// completion.prepareCompletionList()
-		modularCompletionItemEnabled = false
-	}
-}
+// async function updateCompletionList(textDocument: TextDocument): Promise<void>{
+// 	let textPosition = textDocument.offsetAt(currentCursorPosition);
+// 	let text = textDocument.getText();
+// 	if((text.charAt(textPosition).toString() === '.') && !(text.charAt(textPosition-1).toString() === ')')){
+// 		// Produce modular auto-completion results with respect to the preceeding AST Node.
+// 		// completion.cookModularCompletionList()
+// 		modularCompletionItemEnabled = true
+// 	} else {
+// 		// completion.prepareCompletionList()
+// 		modularCompletionItemEnabled = false
+// 	}
+// }
 
 // Hover on context - setup
 async function checkforHoverContents(textDocument: TextDocument): Promise<void>{
@@ -206,17 +206,18 @@ connection.onDidChangeWatchedFiles(_change => {
 	connection.console.log('We received an file change event');
 });
 
-let requestCompletionContext : CompletionContext = {
-	triggerKind: 1,
-	triggerCharacter: '.',
-}
+// let requestCompletionContext : CompletionContext = {
+// 	triggerKind: 1,
+// 	triggerCharacter: '.',
+// }
 
 // Perform auto-completion -> Deligated tp `completion.ts`
 connection.onCompletion(
 	(_textDocumentParams: CompletionParams): CompletionItem[] => {
-		_textDocumentParams.context = requestCompletionContext
-		currentCursorPosition = _textDocumentParams.position
-		return modularCompletionItemEnabled ? completion.generateModular("PImage") : completion.prepareCompletionList()
+		// _textDocumentParams.context = requestCompletionContext
+		// currentCursorPosition = _textDocumentParams.position
+		// return modularCompletionItemEnabled ? completion.generateModular("PImage") : completion.prepareCompletionList()
+		return completion.decideCompletionMethods("PApplet")
 	}
 );
 

@@ -1,6 +1,6 @@
 import * as lsp from 'vscode-languageserver';
 import { CompletionItemKind } from 'vscode-languageserver';
-import * as holder from './grammer/holder'
+import * as Constants from './processing/parse/constants'
 
 export function asCompletionItem(
 	completionEntry: string, completionType: lsp.CompletionItemKind, data: number): lsp.CompletionItem {
@@ -96,75 +96,67 @@ export function findCompletionItemKind(value: number): lsp.CompletionItemKind{
 	return completionKind
 }
 
-export function cookModularCompletionList(): void {
-	// Adapting to: 
-	// - `PShape`
-	// - `PImage`
-	// - `PFont`
-	// - `PShader`
-	// - `PVector`
-}
-
-export function prepareCompletionList(): lsp.CompletionItem[] {
+function PCompletionMethods(classType: any): lsp.CompletionItem[] {
 	let completionItemList: lsp.CompletionItem[] = []
 	let _addIncValue: number = 0
-	let _incKeyList: number = 0
-	holder.containAllKeys.forEach(function(value){
-		value.forEach(function(_){
-			completionItemList[_addIncValue] = asCompletionItem(_, 
-				findCompletionItemKind(holder.containAllKeysType[_incKeyList]), 
-				_addIncValue)
-			_addIncValue += 1
-		})
-		_incKeyList += 1
-	})
+	classType.methods.forEach((method:any) => {
+		const nameInConstantPool = classType.constant_pool[method.name_index];
+		// const signatureInConstantPool = classType.constant_pool[method.descriptor_index];
+		const name = String.fromCharCode.apply(null, nameInConstantPool.bytes);
+		// const signature = String.fromCharCode.apply(null, signatureInConstantPool.bytes)
+		completionItemList[_addIncValue] = asCompletionItem(`${name}()`, 
+			findCompletionItemKind(2), 
+			_addIncValue)
+		_addIncValue += 1
+	});
 	return completionItemList
 }
 
-export function generateModular(receivedObjectType: string): lsp.CompletionItem[] {
-	let PObjCompletionItem: lsp.CompletionItem[] = []
-	let _oAddIncValue = 0
-	let _oIncKeyList = 0
-	switch (receivedObjectType) {
-		case "PShape":
-			PObjCompletionItem.length = 0
-			holder.PShapeCompletion.forEach(function(value){
-				value.forEach(function(_){
-					PObjCompletionItem[_oAddIncValue] = asCompletionItem(_, 
-						findCompletionItemKind(holder.PShapeCompletionType[_oIncKeyList]), 
-						_oAddIncValue)
-					_oAddIncValue += 1
-				})
-				_oIncKeyList += 1
-			})
-			break;
+export function decideCompletionMethods(obtainedClass: String): lsp.CompletionItem[] {
+	let resultantCompletionItem: lsp.CompletionItem[] = []
+	switch(obtainedClass){
+		case "PApplet":
+			resultantCompletionItem = PCompletionMethods(Constants.PAppletClass)
+			break
+		case "PFont":
+			resultantCompletionItem = PCompletionMethods(Constants.PFontClass)
+			break
+		case "PGraphics":
+			resultantCompletionItem = PCompletionMethods(Constants.PGraphicsClass)
+			break
 		case "PImage":
-			PObjCompletionItem.length = 0
-			holder.PImageCompletion.forEach(function(value){
-				value.forEach(function(_){
-					PObjCompletionItem[_oAddIncValue] = asCompletionItem(_, 
-						findCompletionItemKind(holder.PImageCompletionType[_oIncKeyList]), 
-						_oAddIncValue)
-					_oAddIncValue += 1
-				})
-				_oIncKeyList += 1
-			})
-			break;
+			resultantCompletionItem = PCompletionMethods(Constants.PImageClass)
+			break
+		case "PMatrix":
+			resultantCompletionItem = PCompletionMethods(Constants.PMatrixClass)
+			break
+		case "PMatrix2D":
+			resultantCompletionItem = PCompletionMethods(Constants.PMatrixTwoDClass)
+			break
+		case "PMatrix3D":
+			resultantCompletionItem = PCompletionMethods(Constants.PMatrixThreeDClass)
+			break
+		case "PShape":
+			resultantCompletionItem = PCompletionMethods(Constants.PShapeClass)
+			break
+		case "PShapeOBJ":
+			resultantCompletionItem = PCompletionMethods(Constants.PShapeOBJClass)
+			break
+		case "PShapeSVG":
+			resultantCompletionItem = PCompletionMethods(Constants.PShapeSVGClass)
+			break
+		case "PStyle":
+			resultantCompletionItem = PCompletionMethods(Constants.PStyleClass)
+			break
+		case "PSurface":
+			resultantCompletionItem = PCompletionMethods(Constants.PSurfaceClass)
+			break
+		case "PSurfaceNone":
+			resultantCompletionItem = PCompletionMethods(Constants.PSurfaceNoneClass)
+			break
 		case "PVector":
-			PObjCompletionItem.length = 0
-			holder.PVectorCompletion.forEach(function(value){
-				value.forEach(function(_){
-					PObjCompletionItem[_oAddIncValue] = asCompletionItem(_, 
-						findCompletionItemKind(holder.PVectorCompletionType[_oIncKeyList]), 
-						_oAddIncValue)
-					_oAddIncValue += 1
-				})
-				_oIncKeyList += 1
-			})
-			break;
-		default:
-			PObjCompletionItem.length = 0
-			break;
+			resultantCompletionItem = PCompletionMethods(Constants.PVectorClass)
+			break
 	}
-	return PObjCompletionItem
+	return resultantCompletionItem
 }
