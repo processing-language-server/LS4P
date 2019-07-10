@@ -1,4 +1,4 @@
-unzip core.jar
+unzip ../processing/jar/core.jar
 ls processing/core | while read CLASS; do
     if [[ $CLASS =~ "$" ]];
 	then

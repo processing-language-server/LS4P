@@ -1,34 +1,29 @@
 import {
 	createConnection,
 	TextDocuments,
-	TextDocument,
-	Diagnostic,
-	DiagnosticSeverity,
 	ProposedFeatures,
 	InitializeParams,
 	DidChangeConfigurationNotification,
 	CompletionItem,
-	TextDocumentPositionParams,
-	Hover,
-	Position,
 	CompletionParams,
-	CompletionContext
 } from 'vscode-languageserver';
 
-import * as completion from "./completion"
+import * as completion from './completion'
+import * as diagnostics from './diagnostics'
+import * as hover from './hover'
 
-let connection = createConnection(ProposedFeatures.all);
+export let connection = createConnection(ProposedFeatures.all);
 
 let documents: TextDocuments = new TextDocuments();
 
 let hasConfigurationCapability: boolean = false;
 let hasWorkspaceFolderCapability: boolean = false;
-let hasDiagnosticRelatedInformationCapability: boolean = false;
+export let hasDiagnosticRelatedInformationCapability: boolean = false;
 
-let initialPositionObj : Position = {
-	line: 0,
-	character: 1
-}
+// let initialPositionObj : Position = {
+// 	line: 0,
+// 	character: 1
+// }
 // let currentCursorPosition: Position
 // let modularCompletionItemEnabled: Boolean = false
 
@@ -90,10 +85,10 @@ connection.onDidChangeConfiguration(change => {
 		);
 	}
 
-	documents.all().forEach(checkforDiagnostics);
+	documents.all().forEach(diagnostics.checkforDiagnostics);
 });
 
-function getDocumentSettings(resource: string): Thenable<ExampleSettings> {
+export function getDocumentSettings(resource: string): Thenable<ExampleSettings> {
 	if (!hasConfigurationCapability) {
 		return Promise.resolve(globalSettings);
 	}
@@ -113,8 +108,8 @@ documents.onDidClose(e => {
 });
 
 documents.onDidChangeContent(change => {
-	checkforDiagnostics(change.document);
-	checkforHoverContents(change.document);
+	diagnostics.checkforDiagnostics(change.document);
+	hover.checkforHoverContents(change.document);
 	// updateCompletionList(change.document);
 });
 
@@ -132,75 +127,6 @@ documents.onDidChangeContent(change => {
 // }
 
 // Hover on context - setup
-async function checkforHoverContents(textDocument: TextDocument): Promise<void>{
-	let text = textDocument.getText();
-	let checkContents = 'setup';
-	let hover : Hover
-
-	if(text.includes(checkContents)){
-		hover = {
-			contents:{
-				language: 'processing',
-				value: 'this is the hover text that appears when you hover over setup'
-			},
-			range: {
-				start: textDocument.positionAt(0),
-				end: textDocument.positionAt(3)
-			}
-		}
-	}
-
-	connection.onHover(
-		(params: TextDocumentPositionParams): Hover => {
-			return hover
-		}
-	)
-}
-
-// Send Diagnostic reports
-async function checkforDiagnostics(textDocument: TextDocument): Promise<void> {
-	let settings = await getDocumentSettings(textDocument.uri);
-
-	let text = textDocument.getText();
-	let pattern = /\b[A-Z]{2,}\b/g;
-	let m: RegExpExecArray | null;
-
-	let problems = 0;
-	let diagnostics: Diagnostic[] = [];
-	while ((m = pattern.exec(text)) && problems < settings.maxNumberOfProblems) {
-		problems++;
-		let diagnostic: Diagnostic = {
-			severity: DiagnosticSeverity.Hint,
-			range: {
-				start: textDocument.positionAt(m.index),
-				end: textDocument.positionAt(m.index + m[0].length)
-			},
-			message: `${m[0]} is all uppercase.`,
-			source: 'syntax grammer'
-		};
-		if (hasDiagnosticRelatedInformationCapability) {
-			diagnostic.relatedInformation = [
-				{
-					location: {
-						uri: textDocument.uri,
-						range: Object.assign({}, diagnostic.range)
-					},
-					message: 'Unrecognized'
-				},
-				{
-					location: {
-						uri: textDocument.uri,
-						range: Object.assign({}, diagnostic.range)
-					},
-					message: 'Pattern Mismatch'
-				}
-			];
-		}
-		diagnostics.push(diagnostic);
-	}
-
-	connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
-}
 
 connection.onDidChangeWatchedFiles(_change => {
 	connection.console.log('We received an file change event');
@@ -214,9 +140,6 @@ connection.onDidChangeWatchedFiles(_change => {
 // Perform auto-completion -> Deligated tp `completion.ts`
 connection.onCompletion(
 	(_textDocumentParams: CompletionParams): CompletionItem[] => {
-		// _textDocumentParams.context = requestCompletionContext
-		// currentCursorPosition = _textDocumentParams.position
-		// return modularCompletionItemEnabled ? completion.generateModular("PImage") : completion.prepareCompletionList()
 		return completion.decideCompletionMethods("PApplet")
 	}
 );

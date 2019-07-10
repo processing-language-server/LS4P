@@ -1,10 +1,16 @@
 import * as lsp from 'vscode-languageserver';
 import { CompletionItemKind } from 'vscode-languageserver';
-import * as Constants from './processing/parse/constants'
+import * as server from './server'
 const exec = require('child_process').execSync;
 const fs = require('fs');
+const { JavaClassFileReader } = require('java-class-tools')
 
-exec(`unzip -f ${__dirname.substring(0,__dirname.length-4)}/src/processing/jar/core.jar -d ${__dirname}/processing/extractor`)
+export const reader = new JavaClassFileReader();
+
+// exec(`mkdir ${__dirname}/processing/extractor`)
+// exec(`mkdir ${__dirname}/processing/container`)
+// exec(`mv ${__dirname.substring(0,__dirname.length-4)}/src/processing/class ${__dirname}/processing`)
+exec(`unzip -o ${__dirname.substring(0,__dirname.length-4)}/src/processing/jar/core.jar -d ${__dirname}/processing/extractor`)
 exec(`ls ${__dirname}/processing/extractor/processing/core | tee ${__dirname}/processing/container/core.txt`)
 exec(`ls ${__dirname}/processing/extractor/processing/awt | tee ${__dirname}/processing/container/awt.txt`)
 exec(`ls ${__dirname}/processing/extractor/processing/data | tee ${__dirname}/processing/container/data.txt`)
@@ -31,6 +37,7 @@ let extractionModuleType = [
 ]
 
 let classMap = new Map()
+let completeClassMap = new Map()
 
 for(let _counter: number = 0; _counter < 6; _counter++){
 	try {  
@@ -47,6 +54,8 @@ for(let _counter: number = 0; _counter < 6; _counter++){
 		classMap.set(extractionModuleType[_counter], tempCheck)
 	} catch(e) {}
 }
+
+initAllCompletionClasses()
 
 export function asCompletionItem(
 	completionEntry: string, completionType: lsp.CompletionItemKind, data: number): lsp.CompletionItem {
@@ -148,60 +157,73 @@ function PCompletionMethods(classType: any): lsp.CompletionItem[] {
 	classType.methods.forEach((method:any) => {
 		const nameInConstantPool = classType.constant_pool[method.name_index];
 		// const signatureInConstantPool = classType.constant_pool[method.descriptor_index];
+
 		const name = String.fromCharCode.apply(null, nameInConstantPool.bytes);
 		// const signature = String.fromCharCode.apply(null, signatureInConstantPool.bytes)
+
 		completionItemList[_addIncValue] = asCompletionItem(`${name}()`, 
 			findCompletionItemKind(2), 
 			_addIncValue)
 		_addIncValue += 1
+
 	});
 	return completionItemList
 }
 
+function initAllCompletionClasses(){
+	extractionModuleType.forEach(function(value){
+		classMap.get(value).forEach((element: String) => {
+			completeClassMap.set(element, PCompletionMethods(reader.read(`${__dirname}/processing/extractor/processing/${value}/${element}`)))
+		})
+	})
+}
+
 export function decideCompletionMethods(obtainedClass: String): lsp.CompletionItem[] {
 	let resultantCompletionItem: lsp.CompletionItem[] = []
+
+	// TODO: Remove this switch once the sketched is preprocessed and ready
 	switch(obtainedClass){
 		case "PApplet":
-			resultantCompletionItem = PCompletionMethods(Constants.PAppletClass)
+			resultantCompletionItem = completeClassMap.get('PApplet.class')
 			break
 		case "PFont":
-			resultantCompletionItem = PCompletionMethods(Constants.PFontClass)
+			resultantCompletionItem = completeClassMap.get('PFont.class')
 			break
 		case "PGraphics":
-			resultantCompletionItem = PCompletionMethods(Constants.PGraphicsClass)
+			resultantCompletionItem = completeClassMap.get('PGraphics.class')
 			break
 		case "PImage":
-			resultantCompletionItem = PCompletionMethods(Constants.PImageClass)
+			resultantCompletionItem = completeClassMap.get('PImage.class')
 			break
 		case "PMatrix":
-			resultantCompletionItem = PCompletionMethods(Constants.PMatrixClass)
+			resultantCompletionItem = completeClassMap.get('PMatrix.class')
 			break
 		case "PMatrix2D":
-			resultantCompletionItem = PCompletionMethods(Constants.PMatrixTwoDClass)
+			resultantCompletionItem = completeClassMap.get('PMatrix2D.class')
 			break
 		case "PMatrix3D":
-			resultantCompletionItem = PCompletionMethods(Constants.PMatrixThreeDClass)
+			resultantCompletionItem = completeClassMap.get('PMatrix3D.class')
 			break
 		case "PShape":
-			resultantCompletionItem = PCompletionMethods(Constants.PShapeClass)
+			resultantCompletionItem = completeClassMap.get('PShape.class')
 			break
 		case "PShapeOBJ":
-			resultantCompletionItem = PCompletionMethods(Constants.PShapeOBJClass)
+			resultantCompletionItem = completeClassMap.get('PShapeOBJ.class')
 			break
 		case "PShapeSVG":
-			resultantCompletionItem = PCompletionMethods(Constants.PShapeSVGClass)
+			resultantCompletionItem = completeClassMap.get('PShapeSVG.class')
 			break
 		case "PStyle":
-			resultantCompletionItem = PCompletionMethods(Constants.PStyleClass)
+			resultantCompletionItem = completeClassMap.get('PStyle.class')
 			break
 		case "PSurface":
-			resultantCompletionItem = PCompletionMethods(Constants.PSurfaceClass)
+			resultantCompletionItem = completeClassMap.get('PSurface.class')
 			break
 		case "PSurfaceNone":
-			resultantCompletionItem = PCompletionMethods(Constants.PSurfaceNoneClass)
+			resultantCompletionItem = completeClassMap.get('PSurfaceNone.class')
 			break
 		case "PVector":
-			resultantCompletionItem = PCompletionMethods(Constants.PVectorClass)
+			resultantCompletionItem = completeClassMap.get('PVector.class')
 			break
 	}
 	return resultantCompletionItem
