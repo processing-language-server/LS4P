@@ -11,6 +11,7 @@ import {
 import * as completion from './completion'
 import * as diagnostics from './diagnostics'
 import * as hover from './hover'
+import * as preprocessing from './preprocessing'
 
 export let connection = createConnection(ProposedFeatures.all);
 
@@ -49,7 +50,7 @@ connection.onInitialize((params: InitializeParams) => {
 			textDocumentSync: documents.syncKind,
 			completionProvider: {
 				resolveProvider: true,
-				triggerCharacters: [ '.' ]
+				// triggerCharacters: [ '.' ]
 			},
 			hoverProvider: true
 		}
@@ -110,6 +111,7 @@ documents.onDidClose(e => {
 documents.onDidChangeContent(change => {
 	diagnostics.checkforDiagnostics(change.document);
 	hover.checkforHoverContents(change.document);
+	preprocessing.performPreProcessing(change.document);
 	// updateCompletionList(change.document);
 });
 
@@ -149,11 +151,8 @@ connection.onCompletionResolve(
 	(item: CompletionItem): CompletionItem => {
 		// use `item.label`
 		if (item.data === 1) {
-			item.detail = 'Test Details 1';
-			item.documentation = 'Test Documentation 1';
-		} else if (item.data === 2) {
-			item.detail = 'Test Details 2';
-			item.documentation = 'Test Documentation 2';
+			item.detail = 'Field Details';
+			item.documentation = 'Field Documentation';
 		} else {
 			item.detail = 'Test details Else';
 			item.documentation = 'Test Documentation Else';

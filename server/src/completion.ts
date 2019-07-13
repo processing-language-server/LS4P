@@ -156,12 +156,12 @@ function PCompletionMethods(classType: any): lsp.CompletionItem[] {
 	let _addIncValue: number = 0
 	classType.methods.forEach((method:any) => {
 		const nameInConstantPool = classType.constant_pool[method.name_index];
-		// const signatureInConstantPool = classType.constant_pool[method.descriptor_index];
+		const signatureInConstantPool = classType.constant_pool[method.descriptor_index];
 
 		const name = String.fromCharCode.apply(null, nameInConstantPool.bytes);
-		// const signature = String.fromCharCode.apply(null, signatureInConstantPool.bytes)
+		const signature = String.fromCharCode.apply(null, signatureInConstantPool.bytes)
 
-		completionItemList[_addIncValue] = asCompletionItem(`${name}()`, 
+		completionItemList[_addIncValue] = asCompletionItem(`${name}() -> ${signature}`, 
 			findCompletionItemKind(2), 
 			_addIncValue)
 		_addIncValue += 1
