@@ -1,10 +1,13 @@
 import { parse } from 'java-ast'
 import { ParseTree } from 'antlr4ts/tree/ParseTree'
 
-let tokenArray: ParseTree[] = new Array();
+// Tuple -> current Node, Parent Node
+let tokenArray: [ParseTree, ParseTree][] = new Array();
 let _tokenCounter = -1
 
-let wholeAST: ParseTree[] = new Array();
+// Tuple -> Current Node, Parent Node
+// Helps in traversing up the tree
+let wholeAST: [ParseTree, ParseTree | undefined][] = new Array();
 let _wholeCounter = -1
 
 export function parseAST(processedText: string) {
@@ -27,16 +30,16 @@ function extractTokens(gotOne: ParseTree){
 	for(let j = 0; j < gotOne.childCount; j++){
 		if(gotOne.getChild(j).childCount == 0){
 			_tokenCounter +=1
-			tokenArray[_tokenCounter] = gotOne.getChild(j)
+			tokenArray[_tokenCounter] = [gotOne.getChild(j),gotOne]
 		}
 		extractTokens(gotOne.getChild(j))
 	}
 }
 
-// top -> bottom ; right -> left
+// top -> bottom ; left -> right
 function wholeASTExtract(gotOne: ParseTree){
 	_wholeCounter += 1
-	wholeAST[_wholeCounter] = gotOne
+	wholeAST[_wholeCounter] = [gotOne,gotOne.parent]
 	for(let j=0;j<gotOne.childCount;j++){
 		wholeASTExtract(gotOne.getChild(j))
 	}
