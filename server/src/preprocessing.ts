@@ -1,6 +1,6 @@
 import * as lsp from 'vscode-languageserver'
-import { parse } from 'java-ast'
 import * as pStandards from './grammer/terms/preprocessingsnippets'
+import * as parser from './parser'
 
 export async function performPreProcessing(textDocument: lsp.TextDocument): Promise<void>{
 	let unProcessedText = textDocument.getText()
@@ -12,6 +12,6 @@ export async function performPreProcessing(textDocument: lsp.TextDocument): Prom
 	} else {
 		processedText = pStandards.defaultBehaviour(unProcessedText)
 	}
-	let ast = parse(processedText as string)
-	console.log(ast)
+	parser.parseAST(processedText as string)
+	console.log("preProcessing complete")
 }
