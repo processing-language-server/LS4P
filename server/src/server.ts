@@ -109,9 +109,10 @@ documents.onDidClose(e => {
 });
 
 documents.onDidChangeContent(change => {
-	diagnostics.checkforDiagnostics(change.document);
-	hover.checkforHoverContents(change.document);
-	preprocessing.performPreProcessing(change.document);
+	preprocessing.performPreProcessing(change.document)
+	hover.checkforHoverContents(change.document)
+	diagnostics.checkforDiagnostics(change.document)
+	diagnostics.checkForRealtimeDiagnostics(change.document)
 	// updateCompletionList(change.document);
 });
 

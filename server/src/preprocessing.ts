@@ -12,6 +12,6 @@ export async function performPreProcessing(textDocument: lsp.TextDocument): Prom
 	} else {
 		processedText = pStandards.defaultBehaviour(unProcessedText)
 	}
-	parser.parseAST(processedText as string)
+	parser.parseAST(processedText as string, textDocument)
 	console.log("preProcessing complete")
 }
