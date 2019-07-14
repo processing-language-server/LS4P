@@ -7,7 +7,7 @@ export async function performPreProcessing(textDocument: lsp.TextDocument): Prom
 	let processedText: String
 	if(unProcessedText.includes(pStandards.classChecker)) {
 		processedText = pStandards.classBehaviour(unProcessedText)
-	} else if(unProcessedText.includes(pStandards.setUpChecker)) {
+	} else if(unProcessedText.includes(pStandards.setUpChecker) || unProcessedText.includes(pStandards.classChecker)) {
 		processedText = pStandards.setupDrawBehaviour(unProcessedText)
 	} else {
 		processedText = pStandards.defaultBehaviour(unProcessedText)

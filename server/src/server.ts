@@ -86,7 +86,7 @@ connection.onDidChangeConfiguration(change => {
 		);
 	}
 
-	documents.all().forEach(diagnostics.checkforDiagnostics);
+	documents.all().forEach(diagnostics.checkForRealtimeDiagnostics);
 });
 
 export function getDocumentSettings(resource: string): Thenable<ExampleSettings> {
@@ -111,7 +111,6 @@ documents.onDidClose(e => {
 documents.onDidChangeContent(change => {
 	preprocessing.performPreProcessing(change.document)
 	hover.checkforHoverContents(change.document)
-	diagnostics.checkforDiagnostics(change.document)
 	diagnostics.checkForRealtimeDiagnostics(change.document)
 	// updateCompletionList(change.document);
 });
@@ -155,8 +154,8 @@ connection.onCompletionResolve(
 			item.detail = 'Field Details';
 			item.documentation = 'Field Documentation';
 		} else {
-			item.detail = 'Test details Else';
-			item.documentation = 'Test Documentation Else';
+			item.detail = 'Field Details';
+			item.documentation = 'Field Documentation';
 		}
 		return item;
 	}

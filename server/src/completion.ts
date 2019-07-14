@@ -58,11 +58,10 @@ for(let _counter: number = 0; _counter < 6; _counter++){
 initAllCompletionClasses()
 
 export function asCompletionItem(
-	completionEntry: string, completionType: lsp.CompletionItemKind, data: number): lsp.CompletionItem {
+	completionEntry: string, completionType: lsp.CompletionItemKind): lsp.CompletionItem {
 	const item: lsp.CompletionItem = {
 		label: completionEntry,
-		kind: completionType,
-		data: data
+		kind: completionType
 	}
 	return item
 }
@@ -154,6 +153,8 @@ export function findCompletionItemKind(value: number): lsp.CompletionItemKind{
 function PCompletionMethods(classType: any): lsp.CompletionItem[] {
 	let completionItemList: lsp.CompletionItem[] = []
 	let _addIncValue: number = 0
+	let methodSet = new Set()
+	let fieldSet = new Set()
 	classType.methods.forEach((method:any) => {
 		const nameInConstantPool = classType.constant_pool[method.name_index];
 		// const signatureInConstantPool = classType.constant_pool[method.descriptor_index];
@@ -161,12 +162,33 @@ function PCompletionMethods(classType: any): lsp.CompletionItem[] {
 		const name = String.fromCharCode.apply(null, nameInConstantPool.bytes);
 		// const signature = String.fromCharCode.apply(null, signatureInConstantPool.bytes)
 
-		completionItemList[_addIncValue] = asCompletionItem(`${name}()`, 
-			findCompletionItemKind(2), 
-			_addIncValue)
-		_addIncValue += 1
-
+		// To avoid duplicate results
+		methodSet.add(name)
 	});
+
+	classType.fields.forEach((field:any) => {
+		const nameInConstantPool = classType.constant_pool[field.name_index];
+		// const signatureInConstantPool = classType.constant_pool[method.descriptor_index];
+
+		const name = String.fromCharCode.apply(null, nameInConstantPool.bytes);
+		// const signature = String.fromCharCode.apply(null, signatureInConstantPool.bytes)
+
+		// To avoid duplicate results
+		fieldSet.add(name)
+	});
+
+	methodSet.forEach(function(method){
+		completionItemList[_addIncValue] = asCompletionItem(`${method}()`, 
+			findCompletionItemKind(2))
+		_addIncValue += 1
+	})
+
+	fieldSet.forEach(function(field){
+		completionItemList[_addIncValue] = asCompletionItem(`${field}`, 
+			findCompletionItemKind(5))
+		_addIncValue += 1
+	})
+
 	return completionItemList
 }
 
@@ -186,6 +208,9 @@ export function decideCompletionMethods(obtainedClass: String): lsp.CompletionIt
 		case "PApplet":
 			resultantCompletionItem = completeClassMap.get('PApplet.class')
 			break
+		case "PConstants":
+			resultantCompletionItem = completeClassMap.get('PConstants.class')
+		break
 		case "PFont":
 			resultantCompletionItem = completeClassMap.get('PFont.class')
 			break

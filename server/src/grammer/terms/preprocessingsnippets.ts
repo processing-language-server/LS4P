@@ -1,5 +1,6 @@
 
 export const setUpChecker = `setup`
+export const drawChecker = `draw`
 export const classChecker = `class`
 const sizeX = 300
 const sizeY = 300
