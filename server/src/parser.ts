@@ -42,30 +42,39 @@ function cookDiagnosticsReport(processedText: string){
 	let classNameTemp: String = ""
 	wholeAST.forEach(function(node, index){
 		if(node[0] instanceof ClassDeclarationContext){
+			// Find class Name
 			classNameTemp = node[0].getChild(1).text
 		}
 		if(node[0] instanceof ErrorNode){
 			if(node[0].text == `<missing \';\'>`){
 				if(node[1]!.text.substring(0,node[1]!.text.length-13).endsWith(')')){
+					// Method calls
 					errorNodeContents[errorNodeCount] = node[1]!.text.substring(0,node[1]!.text.length-13)
 				} else {
+					// Others
 					if(node[1]!.getChild(node[1]!.childCount-2) instanceof TerminalNode){
+						// If the preceeding child is a Terminal Node
 						errorNodeContents[errorNodeCount] = node[1]!.getChild(node[1]!.childCount-2).text
 					} else {
+						// If the preceeding child is a non-terminal Node
 						let intermediateParseTree: ParseTree = node[1]!.getChild(node[1]!.childCount-2)
+						// Iterate until you find one
 						while(!(intermediateParseTree instanceof TerminalNode)){
 							intermediateParseTree = intermediateParseTree.getChild(intermediateParseTree.childCount-1)
 						}
 						errorNodeContents[errorNodeCount] = intermediateParseTree.text
 					}
 				}
+				errorNodeReasons[errorNodeCount] = "Missing ;"
 			} else {
+				// Other Reasons
 				errorNodeContents[errorNodeCount] = node[0].text
+				errorNodeReasons[errorNodeCount] = "???"
 			}
-			errorNodeReasons[errorNodeCount] = "Missing ;"
 			errorNodeCount+=1
 		}
 		if(node[0] instanceof TerminalNode && node[1] instanceof ConstructorDeclarationContext){
+			// Constructot label mismatch
 			if(classNameTemp != node[0].text && classNameTemp != ""){
 				errorNodeContents[errorNodeCount] = node[0].text
 				errorNodeReasons[errorNodeCount] = "Constructor Label Mismatch"
@@ -73,6 +82,7 @@ function cookDiagnosticsReport(processedText: string){
 			}
 		}
 	})
+	// Delete current Error if the Error Node is resolved
 	errorNodeContents.forEach(function(error, index){
 		if(!(processedText.indexOf(error as string) > -1)){
 			delete errorNodeContents[index]
