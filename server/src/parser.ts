@@ -34,11 +34,11 @@ export function parseAST(processedText: string, textDocument: TextDocument) {
 	for(let i = 0; i < ast.childCount; i++){
 		wholeASTExtract(ast.children![i])
 	}
-	cookDiagnosticsReport()
+	cookDiagnosticsReport(processedText)
 	console.log("parserTrees")
 }
 
-function cookDiagnosticsReport(){
+function cookDiagnosticsReport(processedText: string){
 	let classNameTemp: String = ""
 	wholeAST.forEach(function(node, index){
 		if(node[0] instanceof ClassDeclarationContext){
@@ -71,6 +71,12 @@ function cookDiagnosticsReport(){
 				errorNodeReasons[errorNodeCount] = "Constructor Label Mismatch"
 				errorNodeCount+=1
 			}
+		}
+	})
+	errorNodeContents.forEach(function(error, index){
+		if(!(processedText.indexOf(error as string) > -1)){
+			delete errorNodeContents[index]
+			delete errorNodeReasons[index]
 		}
 	})
 }
