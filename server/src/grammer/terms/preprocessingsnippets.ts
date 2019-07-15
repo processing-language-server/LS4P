@@ -2,12 +2,13 @@
 export const setUpChecker = `setup`
 export const drawChecker = `draw`
 export const classChecker = `class`
+export const voidChecker = `void`
 const sizeX = 300
 const sizeY = 300
 const fillR = 120
 const fillG = 50
 const fillB = 240
-const defaultClassName = `ProcessingDefault`
+const defaultClassName = "ProcessingDefault"
 const defaultLib = `PApplet`
 
 export function defaultBehaviour(unProcessedTest: String): String {
@@ -15,10 +16,10 @@ export function defaultBehaviour(unProcessedTest: String): String {
 	import processing.core.${defaultLib};
 	public class ${defaultClassName} extends ${defaultLib}{
     	public static void main(String[] args) {
-    		PApplet.main("${defaultClassName}");
+    		PApplet.main(\"${defaultClassName}\");
     	}
    		public void settings(){
-			   size(${sizeX},${sizeY});
+			size(${sizeX},${sizeY});
    		}
     	public void setup(){
         	fill(${fillR},${fillG},${fillB});
@@ -36,7 +37,7 @@ export function setupDrawBehaviour(unProcessedTest: String): String {
 	import processing.core.${defaultLib};
 	public class ${defaultClassName} extends ${defaultLib}{
     	public static void main(String[] args) {
-    		PApplet.main("${defaultClassName}");
+    		PApplet.main(\"${defaultClassName}\");
     	}
    		${unProcessedTest}
 	}

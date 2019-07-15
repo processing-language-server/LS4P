@@ -7,11 +7,13 @@ export async function performPreProcessing(textDocument: lsp.TextDocument): Prom
 	let processedText: String
 	if(unProcessedText.includes(pStandards.classChecker)) {
 		processedText = pStandards.classBehaviour(unProcessedText)
-	} else if(unProcessedText.includes(pStandards.setUpChecker) || unProcessedText.includes(pStandards.classChecker)) {
+	} else if(unProcessedText.includes(pStandards.setUpChecker) || 
+			  unProcessedText.includes(pStandards.classChecker) || 
+			  unProcessedText.includes(pStandards.voidChecker)) {
 		processedText = pStandards.setupDrawBehaviour(unProcessedText)
 	} else {
 		processedText = pStandards.defaultBehaviour(unProcessedText)
 	}
 	parser.parseAST(processedText as string, textDocument)
-	console.log("preProcessing complete")
+	console.log("PreProcessing complete.!")
 }
