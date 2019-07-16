@@ -52,7 +52,7 @@ connection.onInitialize((params: InitializeParams) => {
 				resolveProvider: true,
 				// triggerCharacters: [ '.' ]
 			},
-			hoverProvider: true
+			// hoverProvider: true
 		}
 	};
 });
@@ -110,7 +110,8 @@ documents.onDidClose(e => {
 
 documents.onDidChangeContent(change => {
 	preprocessing.performPreProcessing(change.document)
-	hover.checkforHoverContents(change.document)
+	// Hover disabled for now
+	// hover.checkforHoverContents(change.document)
 	diagnostics.checkForRealtimeDiagnostics(change.document)
 	// updateCompletionList(change.document);
 });

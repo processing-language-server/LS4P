@@ -9,11 +9,13 @@ import { ErrorNode } from 'antlr4ts/tree/ErrorNode';
 import { ParseTree } from 'antlr4ts/tree/ParseTree'
 import * as server from './server'
 import * as parser from './parser'
+const fs = require('fs');
 
 // Error Node contents
 // Array because there can be multiple error nodes
 // Defaults to "NO"
 let errorNodeContents: String[] = []
+let errorNodeLine: number[] = []
 let errorNodeReasons: String[] = []
 let errorNodeCount = 0
 
@@ -24,16 +26,23 @@ export async function checkForRealtimeDiagnostics(processedTextDocument: TextDoc
 	let problems = 0;
 	let diagnostics: Diagnostic[] = []
 	let m: RegExpMatchArray | null;
-	errorNodeContents.forEach(function(errorContent, index){
-		if((m = processedText.match(errorContent as string)) && problems < settings.maxNumberOfProblems){
+	errorNodeLine.forEach(function(errorLine, index){
+		if(problems < settings.maxNumberOfProblems){
 			problems++;
 			let diagnostic: Diagnostic = {
 				severity: DiagnosticSeverity.Error,
 				range: {
-					start: processedTextDocument.positionAt(m.index as number),
-					end: processedTextDocument.positionAt(m.index as number + m[0].length)
+					// Fix position Values
+					start: {
+						line: errorLine-1,
+						character: 8
+					},
+					end: {
+						line: errorLine-1,
+						character: 100
+					}
 				},
-				message: `${m[0]} - Error found`,
+				message: `Error found`,
 				source: `Error in Source File`
 			}
 			if (server.hasDiagnosticRelatedInformationCapability) {
@@ -48,7 +57,6 @@ export async function checkForRealtimeDiagnostics(processedTextDocument: TextDoc
 				];
 			}
 			diagnostics.push(diagnostic);
-			setErrorNodeBackToDefault()
 		}
 	})
 	server.connection.sendDiagnostics({ uri: processedTextDocument.uri, diagnostics });
@@ -110,5 +118,23 @@ export function cookDiagnosticsReport(processedText: string){
 
 function setErrorNodeBackToDefault(){
 	errorNodeContents = []
+	errorNodeLine = []
 	errorNodeCount = 0
+}
+
+export function cookCompilationDiagnostics(processedText: string){
+	// If one error is fixed it's not popped from stack - check
+	try {  
+		let data = fs.readFileSync(`${__dirname}/compile/error.txt`, 'utf-8')
+		if(data == ''){
+			// No Error on Compilation
+			setErrorNodeBackToDefault()
+		} else {
+			let tempSplit = data.split(':')
+			errorNodeLine[errorNodeCount] = tempSplit[1]
+			errorNodeReasons[errorNodeCount] = tempSplit[3]
+			errorNodeCount += 1
+			// Place a break point
+		}
+	} catch(e) {}
 }

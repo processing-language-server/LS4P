@@ -3,6 +3,9 @@ export const setUpChecker = `setup`
 export const drawChecker = `draw`
 export const classChecker = `class`
 export const voidChecker = `void`
+
+// Dynamic Imports should take format - `import __.__.__;`
+export let dynamicImports = ``
 const sizeX = 300
 const sizeY = 300
 const fillR = 120
@@ -14,6 +17,7 @@ const defaultLib = `PApplet`
 export function defaultBehaviour(unProcessedTest: String): String {
 	let processedText = `
 	import processing.core.${defaultLib};
+	${dynamicImports}
 	public class ${defaultClassName} extends ${defaultLib}{
     	public static void main(String[] args) {
     		PApplet.main(\"${defaultClassName}\");
@@ -35,6 +39,7 @@ export function defaultBehaviour(unProcessedTest: String): String {
 export function setupDrawBehaviour(unProcessedTest: String): String {
 	let processedText = `
 	import processing.core.${defaultLib};
+	${dynamicImports}
 	public class ${defaultClassName} extends ${defaultLib}{
     	public static void main(String[] args) {
     		PApplet.main(\"${defaultClassName}\");

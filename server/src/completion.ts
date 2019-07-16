@@ -66,6 +66,56 @@ export function asCompletionItem(
 	return item
 }
 
+function PCompletionMethods(classType: any): lsp.CompletionItem[] {
+	let completionItemList: lsp.CompletionItem[] = []
+	let _addIncValue: number = 0
+	let methodSet = new Set()
+	let fieldSet = new Set()
+	classType.methods.forEach((method:any) => {
+		const nameInConstantPool = classType.constant_pool[method.name_index];
+		// const signatureInConstantPool = classType.constant_pool[method.descriptor_index];
+
+		const name = String.fromCharCode.apply(null, nameInConstantPool.bytes);
+		// const signature = String.fromCharCode.apply(null, signatureInConstantPool.bytes)
+
+		// To avoid duplicate results
+		methodSet.add(name)
+	});
+
+	classType.fields.forEach((field:any) => {
+		const nameInConstantPool = classType.constant_pool[field.name_index];
+		// const signatureInConstantPool = classType.constant_pool[method.descriptor_index];
+
+		const name = String.fromCharCode.apply(null, nameInConstantPool.bytes);
+		// const signature = String.fromCharCode.apply(null, signatureInConstantPool.bytes)
+
+		// To avoid duplicate results
+		fieldSet.add(name)
+	});
+
+	methodSet.forEach(function(method){
+		completionItemList[_addIncValue] = asCompletionItem(`${method}()`, 
+			findCompletionItemKind(2))
+		_addIncValue += 1
+	})
+
+	fieldSet.forEach(function(field){
+		completionItemList[_addIncValue] = asCompletionItem(`${field}`, 
+			findCompletionItemKind(5))
+		_addIncValue += 1
+	})
+
+	return completionItemList
+}
+
+function initAllCompletionClasses(){
+	extractionModuleType.forEach(function(value){
+		classMap.get(value).forEach((element: String) => {
+			completeClassMap.set(element, PCompletionMethods(reader.read(`${__dirname}/processing/extractor/processing/${value}/${element}`)))
+		})
+	})
+}
+
 export function findCompletionItemKind(value: number): lsp.CompletionItemKind{
 	let completionKind: lsp.CompletionItemKind = CompletionItemKind.Text
 	switch (value) {
@@ -150,63 +200,14 @@ export function findCompletionItemKind(value: number): lsp.CompletionItemKind{
 	return completionKind
 }
 
-function PCompletionMethods(classType: any): lsp.CompletionItem[] {
-	let completionItemList: lsp.CompletionItem[] = []
-	let _addIncValue: number = 0
-	let methodSet = new Set()
-	let fieldSet = new Set()
-	classType.methods.forEach((method:any) => {
-		const nameInConstantPool = classType.constant_pool[method.name_index];
-		// const signatureInConstantPool = classType.constant_pool[method.descriptor_index];
-
-		const name = String.fromCharCode.apply(null, nameInConstantPool.bytes);
-		// const signature = String.fromCharCode.apply(null, signatureInConstantPool.bytes)
-
-		// To avoid duplicate results
-		methodSet.add(name)
-	});
-
-	classType.fields.forEach((field:any) => {
-		const nameInConstantPool = classType.constant_pool[field.name_index];
-		// const signatureInConstantPool = classType.constant_pool[method.descriptor_index];
-
-		const name = String.fromCharCode.apply(null, nameInConstantPool.bytes);
-		// const signature = String.fromCharCode.apply(null, signatureInConstantPool.bytes)
-
-		// To avoid duplicate results
-		fieldSet.add(name)
-	});
-
-	methodSet.forEach(function(method){
-		completionItemList[_addIncValue] = asCompletionItem(`${method}()`, 
-			findCompletionItemKind(2))
-		_addIncValue += 1
-	})
-
-	fieldSet.forEach(function(field){
-		completionItemList[_addIncValue] = asCompletionItem(`${field}`, 
-			findCompletionItemKind(5))
-		_addIncValue += 1
-	})
-
-	return completionItemList
-}
-
-function initAllCompletionClasses(){
-	extractionModuleType.forEach(function(value){
-		classMap.get(value).forEach((element: String) => {
-			completeClassMap.set(element, PCompletionMethods(reader.read(`${__dirname}/processing/extractor/processing/${value}/${element}`)))
-		})
-	})
-}
-
 export function decideCompletionMethods(obtainedClass: String): lsp.CompletionItem[] {
 	let resultantCompletionItem: lsp.CompletionItem[] = []
 
 	// TODO: Remove this switch once the sketched is preprocessed and ready
 	switch(obtainedClass){
 		case "PApplet":
-			resultantCompletionItem = completeClassMap.get('PApplet.class')
+			// void autocompletion - testing diagnostics
+			resultantCompletionItem = []
 			break
 		case "PConstants":
 			resultantCompletionItem = completeClassMap.get('PConstants.class')

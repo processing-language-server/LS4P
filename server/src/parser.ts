@@ -26,14 +26,21 @@ export function parseAST(processedText: string, textDocument: TextDocument) {
 		wholeASTExtract(ast.children![i])
 	}
 
-	diagnostics.cookDiagnosticsReport(processedText)
+	let fileName = textDocument.uri.split('/')
 
 	// mkdir /out/compile
 	// make sure to set .classpath for Processing core as environment variable
-	childProcess.execSync(`echo \'${processedText}\' > ${__dirname}/compile/ProcessingDefault.java`)
-	childProcess.execSync(`javac ${__dirname}/compile/ProcessingDefault.java -Xlint:none -Xstdout ${__dirname}/compile/error.txt`)
+	// This suites for raw java case - should handle for default and setupDraw case
+	try{
+		childProcess.execSync(`echo \'${processedText}\' > ${__dirname}/compile/${fileName[fileName.length-1].substring(0,fileName[fileName.length-1].length-4)}.java`)
+		childProcess.execSync(`javac ${__dirname}/compile/${fileName[fileName.length-1].substring(0,fileName[fileName.length-1].length-4)}.java -Xlint:none -Xstdout ${__dirname}/compile/error.txt`)
+	} catch(e){
 
+	}
 	// Write methods to handle Error in the Error Stream
+	// diagnostics.cookDiagnosticsReport(processedText)
+	diagnostics.cookCompilationDiagnostics(processedText)
+
 
 	console.log("Parsed Successfully.!")
 }
