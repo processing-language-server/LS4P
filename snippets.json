@@ -2,10 +2,10 @@
     "Initialize Processing Sketch": {
 		"prefix": "setup()",
 		"body": [
-			"void setup(){",
+			"public void setup(){",
 			"\t$1",
 			"}",
-			"void draw(){",
+			"public void draw(){",
 			"\t$2",
 			"}"
 		],

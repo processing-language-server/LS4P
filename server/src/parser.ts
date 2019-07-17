@@ -39,7 +39,7 @@ export function parseAST(processedText: string, textDocument: TextDocument) {
 	}
 	// Write methods to handle Error in the Error Stream
 	// diagnostics.cookDiagnosticsReport(processedText)
-	diagnostics.cookCompilationDiagnostics(processedText)
+	diagnostics.cookCompilationDiagnostics(processedText, `${__dirname}/compile/${fileName[fileName.length-1].substring(0,fileName[fileName.length-1].length-4)}.java`)
 
 
 	console.log("Parsed Successfully.!")

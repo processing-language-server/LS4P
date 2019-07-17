@@ -9,6 +9,8 @@ import { ErrorNode } from 'antlr4ts/tree/ErrorNode';
 import { ParseTree } from 'antlr4ts/tree/ParseTree'
 import * as server from './server'
 import * as parser from './parser'
+import * as preProcessingClass from './preprocessing'
+
 const fs = require('fs');
 
 // Error Node contents
@@ -18,6 +20,7 @@ let errorNodeContents: String[] = []
 let errorNodeLine: number[] = []
 let errorNodeReasons: String[] = []
 let errorNodeCount = 0
+let totalErrorCount = 0
 
 // Diagnostics report based on Error Node
 export async function checkForRealtimeDiagnostics(processedTextDocument: TextDocument): Promise<void> {
@@ -35,11 +38,11 @@ export async function checkForRealtimeDiagnostics(processedTextDocument: TextDoc
 					// Fix position Values
 					start: {
 						line: errorLine-1,
-						character: 8
+						character: 0
 					},
 					end: {
 						line: errorLine-1,
-						character: 100
+						character: 200
 					}
 				},
 				message: `Error found`,
@@ -120,9 +123,10 @@ function setErrorNodeBackToDefault(){
 	errorNodeContents = []
 	errorNodeLine = []
 	errorNodeCount = 0
+	totalErrorCount = 0
 }
 
-export function cookCompilationDiagnostics(processedText: string){
+export function cookCompilationDiagnostics(processedText: string, pwd: String){
 	// If one error is fixed it's not popped from stack - check
 	try {  
 		let data = fs.readFileSync(`${__dirname}/compile/error.txt`, 'utf-8')
@@ -130,10 +134,38 @@ export function cookCompilationDiagnostics(processedText: string){
 			// No Error on Compilation
 			setErrorNodeBackToDefault()
 		} else {
-			let tempSplit = data.split(':')
-			errorNodeLine[errorNodeCount] = tempSplit[1]
-			errorNodeReasons[errorNodeCount] = tempSplit[3]
-			errorNodeCount += 1
+			setErrorNodeBackToDefault()
+			let tempSplit = data.split('\n')
+			let tempoErrorCount = tempSplit[tempSplit.length-2]
+			let tempo2ErrorCount = tempoErrorCount.split(" ")
+			totalErrorCount = +tempo2ErrorCount[0]
+			
+			tempSplit.forEach(function(line:String, index: number){
+				if(line.includes(`${pwd}`)){
+					let innerSplit = line.split(":")
+					// Handling line number based on current Behaviour - since preprocessing is done
+					if(preProcessingClass.defaultBehaviourEnable){
+						errorNodeLine[errorNodeCount] = +innerSplit[1] - 14
+					} else if(preProcessingClass.classBehaviourEnabled){
+						errorNodeLine[errorNodeCount] = +innerSplit[1] 
+					} else if(preProcessingClass.setUpDrawBehaviourEnabled){
+						errorNodeLine[errorNodeCount] = +innerSplit[1] - 7
+					}
+					let localIndex = index + 1
+					errorNodeReasons[errorNodeCount] = innerSplit[3]
+					while(true){
+						if(tempSplit[localIndex].includes(`${pwd}`) || 
+							tempSplit[localIndex].includes(`error`) ||
+							tempSplit[localIndex].includes(`errors`)) {
+								break
+						} else {
+							errorNodeReasons[errorNodeCount]  = `${errorNodeReasons[errorNodeCount]}\n ${tempSplit[localIndex]}`
+							localIndex+=1
+						}
+					}
+					errorNodeCount += 1
+				}
+			})
 			// Place a break point
 		}
 	} catch(e) {}
