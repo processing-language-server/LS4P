@@ -3,7 +3,7 @@ import * as pStandards from './grammer/terms/preprocessingsnippets'
 import * as parser from './parser'
 
 export let defaultBehaviourEnable = false
-export let methodBehaviour = false
+export let methodBehaviourEnable = false
 
 let methodPattern = /[\w\<\>\[\]]+\s+(\w+) *\([^\)]*\) *(\{?|[^;])/
 
@@ -27,5 +27,5 @@ export async function performPreProcessing(textDocument: lsp.TextDocument): Prom
 
 function setBehaviours(_b1:boolean,_b2: boolean){
 	defaultBehaviourEnable = _b1
-	methodBehaviour = _b2
+	methodBehaviourEnable = _b2
 }

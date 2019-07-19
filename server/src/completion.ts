@@ -1,8 +1,10 @@
 import * as lsp from 'vscode-languageserver';
 import { CompletionItemKind, CompletionParams } from 'vscode-languageserver';
-import * as server from './server'
+import * as preprocessing from './preprocessing'
+import * as pStandards from './grammer/terms/preprocessingsnippets'
 import * as parser from './parser';
-import { MethodBodyContext } from 'java-ast/dist/parser/JavaParser';
+import { MethodBodyContext, TypeTypeOrVoidContext, TypeTypeContext } from 'java-ast/dist/parser/JavaParser';
+import { ErrorNode } from 'antlr4ts/tree/ErrorNode';
 const exec = require('child_process').execSync;
 const fs = require('fs');
 const { JavaClassFileReader } = require('java-class-tools')
@@ -209,29 +211,64 @@ export function decideCompletionMethods(_textDocumentParams: CompletionParams): 
 	let resultantCompletionItem: lsp.CompletionItem[] = []
 	let lineStartMethodBody: number[] = []
 	let lineEndMethodBody: number[] = []
+	let avoidLineAuto: number[] = []
 	let _methodCounter: number = 0
+	let _avoidCounter: number = 0
 
 	let currentLineInWorkSpace = _textDocumentParams.position.line
-
-	parser.wholeAST
-
-	parser.tokenArray
 
 	parser.wholeAST.forEach(function(node, index){
 
 		if(node[0] instanceof MethodBodyContext){
-			lineStartMethodBody[_methodCounter] = node[0]._start.line - 11
-			lineEndMethodBody[_methodCounter] = node[0]._stop!.line - 11
+			lineStartMethodBody[_methodCounter] = node[0]._start.line
+			lineEndMethodBody[_methodCounter] = node[0]._stop!.line
 			_methodCounter += 1
 		}
 
+		if(node[0] instanceof ErrorNode){
+			avoidLineAuto[_avoidCounter] = node[0]._symbol.line
+			_avoidCounter += 1
+		}
+
 	})
+
+	if(preprocessing.defaultBehaviourEnable){
+		lineStartMethodBody.forEach(function(value, index){
+			lineStartMethodBody[index] = value - pStandards.reduceLineDefaultBehaviour
+		})
+		lineEndMethodBody.forEach(function(value, index){
+			lineEndMethodBody[index] = value - pStandards.reduceLineDefaultBehaviour
+		})
+		avoidLineAuto.forEach(function(value, index){
+			avoidLineAuto[index] = value - pStandards.reduceLineDefaultBehaviour
+		})
+	} else if(preprocessing.methodBehaviourEnable){
+		lineStartMethodBody.forEach(function(value, index){
+			lineStartMethodBody[index] = value - pStandards.reduceLineMethodBehaviour
+		})
+		lineEndMethodBody.forEach(function(value, index){
+			lineEndMethodBody[index] = value - pStandards.reduceLineMethodBehaviour
+		})
+		avoidLineAuto.forEach(function(value,index){
+			avoidLineAuto[index] = value - pStandards.reduceLineMethodBehaviour
+		})
+	}
 
 	lineStartMethodBody.forEach(function(value, index){
 		if(value <= currentLineInWorkSpace && lineEndMethodBody[index] >= currentLineInWorkSpace){
 			resultantCompletionItem = completeClassMap.get(`${currentCompletionClass}.class`)
 		}
 	})
+
+	avoidLineAuto.forEach(function(value,index){
+		// since the index in workspace starts with `0` -> currentLineInWorkSpace + 2 (1st -> variable declaration, 2nd -> no autocompletion for variable names)
+		// avoid auto completion while naming varaibles
+		if(value == currentLineInWorkSpace + 2){
+			resultantCompletionItem = []
+		}
+	})
+
+	// methods to avoid auto compleion during method declaration.
 
 	return resultantCompletionItem
 }

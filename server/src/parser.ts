@@ -30,6 +30,8 @@ export function parseAST(processedText: string, textDocument: TextDocument) {
 		wholeASTExtract(ast.children![i])
 	}
 
+	console.log("Break point here to obtain AST")
+
 	// mkdir /out/compile
 	// make sure to set .classpath for Processing core as environment variable
 	// This suites for raw java case - should handle for default and setupDraw case

@@ -12,6 +12,9 @@ import processing.javafx.*\;
 import java.util.*\;
 `
 
+export const reduceLineDefaultBehaviour = 11
+export const reduceLineMethodBehaviour = 10
+
 export function setDefaultClassName(className : String){
 	defaultClassName = className as string
 }

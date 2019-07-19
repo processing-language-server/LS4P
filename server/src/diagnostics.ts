@@ -10,6 +10,7 @@ import { ParseTree } from 'antlr4ts/tree/ParseTree'
 import * as server from './server'
 import * as parser from './parser'
 import * as preProcessingClass from './preprocessing'
+import * as pStandards from './grammer/terms/preprocessingsnippets'
 
 const fs = require('fs');
 
@@ -145,9 +146,9 @@ export function cookCompilationDiagnostics(processedText: string, pwd: String){
 					let innerSplit = line.split(":")
 					// Handling line number based on current Behaviour - since preprocessing is done
 					if(preProcessingClass.defaultBehaviourEnable){
-						errorNodeLine[errorNodeCount] = +innerSplit[1] - 11
-					} else if(preProcessingClass.methodBehaviour){
-						errorNodeLine[errorNodeCount] = +innerSplit[1] - 10
+						errorNodeLine[errorNodeCount] = +innerSplit[1] - pStandards.reduceLineDefaultBehaviour
+					} else if(preProcessingClass.methodBehaviourEnable){
+						errorNodeLine[errorNodeCount] = +innerSplit[1] - pStandards.reduceLineMethodBehaviour
 					}
 					let localIndex = index + 1
 					errorNodeReasons[errorNodeCount] = line.split("error:")[1]
