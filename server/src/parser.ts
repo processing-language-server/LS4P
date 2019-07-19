@@ -39,7 +39,8 @@ export function parseAST(processedText: string, textDocument: TextDocument) {
 	} catch(e){
 
 	}
-	// Write methods to handle Error in the Error Stream
+
+	// Wrote methods to handle Error in the Error Stream
 	// diagnostics.cookDiagnosticsReport(processedText)
 	diagnostics.cookCompilationDiagnostics(processedText, `${__dirname}/compile/${pStandards.defaultClassName}.java`)
 

@@ -1,7 +1,8 @@
 import * as lsp from 'vscode-languageserver';
-import { CompletionItemKind } from 'vscode-languageserver';
+import { CompletionItemKind, CompletionParams } from 'vscode-languageserver';
 import * as server from './server'
-import { ast } from './parser';
+import * as parser from './parser';
+import { MethodBodyContext } from 'java-ast/dist/parser/JavaParser';
 const exec = require('child_process').execSync;
 const fs = require('fs');
 const { JavaClassFileReader } = require('java-class-tools')
@@ -204,62 +205,33 @@ export function findCompletionItemKind(value: number): lsp.CompletionItemKind{
 	return completionKind
 }
 
-export function decideCompletionMethods(): lsp.CompletionItem[] {
+export function decideCompletionMethods(_textDocumentParams: CompletionParams): lsp.CompletionItem[] {
 	let resultantCompletionItem: lsp.CompletionItem[] = []
+	let lineStartMethodBody: number[] = []
+	let lineEndMethodBody: number[] = []
+	let _methodCounter: number = 0
 
-	console.log(ast)
+	let currentLineInWorkSpace = _textDocumentParams.position.line
 
-	resultantCompletionItem = completeClassMap.get(`${currentCompletionClass}.class`)
+	parser.wholeAST
 
+	parser.tokenArray
 
-	// TODO: Remove this switch once the sketched is preprocessed and ready
-	// switch(obtainedClass){
-	// 	case "PApplet":
-	// 		// void autocompletion - testing diagnostics
-	// 		resultantCompletionItem = completeClassMap.get('PApplet.class')
-	// 		break
-	// 	case "PConstants":
-	// 		resultantCompletionItem = completeClassMap.get('PConstants.class')
-	// 	break
-	// 	case "PFont":
-	// 		resultantCompletionItem = completeClassMap.get('PFont.class')
-	// 		break
-	// 	case "PGraphics":
-	// 		resultantCompletionItem = completeClassMap.get('PGraphics.class')
-	// 		break
-	// 	case "PImage":
-	// 		resultantCompletionItem = completeClassMap.get('PImage.class')
-	// 		break
-	// 	case "PMatrix":
-	// 		resultantCompletionItem = completeClassMap.get('PMatrix.class')
-	// 		break
-	// 	case "PMatrix2D":
-	// 		resultantCompletionItem = completeClassMap.get('PMatrix2D.class')
-	// 		break
-	// 	case "PMatrix3D":
-	// 		resultantCompletionItem = completeClassMap.get('PMatrix3D.class')
-	// 		break
-	// 	case "PShape":
-	// 		resultantCompletionItem = completeClassMap.get('PShape.class')
-	// 		break
-	// 	case "PShapeOBJ":
-	// 		resultantCompletionItem = completeClassMap.get('PShapeOBJ.class')
-	// 		break
-	// 	case "PShapeSVG":
-	// 		resultantCompletionItem = completeClassMap.get('PShapeSVG.class')
-	// 		break
-	// 	case "PStyle":
-	// 		resultantCompletionItem = completeClassMap.get('PStyle.class')
-	// 		break
-	// 	case "PSurface":
-	// 		resultantCompletionItem = completeClassMap.get('PSurface.class')
-	// 		break
-	// 	case "PSurfaceNone":
-	// 		resultantCompletionItem = completeClassMap.get('PSurfaceNone.class')
-	// 		break
-	// 	case "PVector":
-	// 		resultantCompletionItem = completeClassMap.get('PVector.class')
-	// 		break
-	// }
+	parser.wholeAST.forEach(function(node, index){
+
+		if(node[0] instanceof MethodBodyContext){
+			lineStartMethodBody[_methodCounter] = node[0]._start.line - 11
+			lineEndMethodBody[_methodCounter] = node[0]._stop!.line - 11
+			_methodCounter += 1
+		}
+
+	})
+
+	lineStartMethodBody.forEach(function(value, index){
+		if(value <= currentLineInWorkSpace && lineEndMethodBody[index] >= currentLineInWorkSpace){
+			resultantCompletionItem = completeClassMap.get(`${currentCompletionClass}.class`)
+		}
+	})
+
 	return resultantCompletionItem
 }

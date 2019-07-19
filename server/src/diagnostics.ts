@@ -65,7 +65,7 @@ export async function checkForRealtimeDiagnostics(processedTextDocument: TextDoc
 	server.connection.sendDiagnostics({ uri: processedTextDocument.uri, diagnostics });
 }
 
-// Depricated Diagnostics Reports - Should replace with compilation reports
+// Depricated Diagnostics Reports - Replaced with compilation reports
 export function cookDiagnosticsReport(processedText: string){
 	let classNameTemp: String = ""
 	parser.wholeAST.forEach(function(node, index){

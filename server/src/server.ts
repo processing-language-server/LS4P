@@ -144,7 +144,7 @@ connection.onDidChangeWatchedFiles(_change => {
 // Perform auto-completion -> Deligated tp `completion.ts`
 connection.onCompletion(
 	(_textDocumentParams: CompletionParams): CompletionItem[] => {
-		return completion.decideCompletionMethods()
+		return completion.decideCompletionMethods(_textDocumentParams)
 	}
 );
 
