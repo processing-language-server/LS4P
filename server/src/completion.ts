@@ -1,6 +1,7 @@
 import * as lsp from 'vscode-languageserver';
 import { CompletionItemKind } from 'vscode-languageserver';
 import * as server from './server'
+import { ast } from './parser';
 const exec = require('child_process').execSync;
 const fs = require('fs');
 const { JavaClassFileReader } = require('java-class-tools')
@@ -36,6 +37,8 @@ let extractionModuleType = [
 	'OPENGL'
 ]
 
+let currentCompletionClass = `PApplet`
+
 let classMap = new Map()
 let completeClassMap = new Map()
 
@@ -61,7 +64,8 @@ export function asCompletionItem(
 	completionEntry: string, completionType: lsp.CompletionItemKind): lsp.CompletionItem {
 	const item: lsp.CompletionItem = {
 		label: completionEntry,
-		kind: completionType
+		kind: completionType,
+		filterText: completionEntry
 	}
 	return item
 }
@@ -200,57 +204,62 @@ export function findCompletionItemKind(value: number): lsp.CompletionItemKind{
 	return completionKind
 }
 
-export function decideCompletionMethods(obtainedClass: String): lsp.CompletionItem[] {
+export function decideCompletionMethods(): lsp.CompletionItem[] {
 	let resultantCompletionItem: lsp.CompletionItem[] = []
 
+	console.log(ast)
+
+	resultantCompletionItem = completeClassMap.get(`${currentCompletionClass}.class`)
+
+
 	// TODO: Remove this switch once the sketched is preprocessed and ready
-	switch(obtainedClass){
-		case "PApplet":
-			// void autocompletion - testing diagnostics
-			resultantCompletionItem = []
-			break
-		case "PConstants":
-			resultantCompletionItem = completeClassMap.get('PConstants.class')
-		break
-		case "PFont":
-			resultantCompletionItem = completeClassMap.get('PFont.class')
-			break
-		case "PGraphics":
-			resultantCompletionItem = completeClassMap.get('PGraphics.class')
-			break
-		case "PImage":
-			resultantCompletionItem = completeClassMap.get('PImage.class')
-			break
-		case "PMatrix":
-			resultantCompletionItem = completeClassMap.get('PMatrix.class')
-			break
-		case "PMatrix2D":
-			resultantCompletionItem = completeClassMap.get('PMatrix2D.class')
-			break
-		case "PMatrix3D":
-			resultantCompletionItem = completeClassMap.get('PMatrix3D.class')
-			break
-		case "PShape":
-			resultantCompletionItem = completeClassMap.get('PShape.class')
-			break
-		case "PShapeOBJ":
-			resultantCompletionItem = completeClassMap.get('PShapeOBJ.class')
-			break
-		case "PShapeSVG":
-			resultantCompletionItem = completeClassMap.get('PShapeSVG.class')
-			break
-		case "PStyle":
-			resultantCompletionItem = completeClassMap.get('PStyle.class')
-			break
-		case "PSurface":
-			resultantCompletionItem = completeClassMap.get('PSurface.class')
-			break
-		case "PSurfaceNone":
-			resultantCompletionItem = completeClassMap.get('PSurfaceNone.class')
-			break
-		case "PVector":
-			resultantCompletionItem = completeClassMap.get('PVector.class')
-			break
-	}
+	// switch(obtainedClass){
+	// 	case "PApplet":
+	// 		// void autocompletion - testing diagnostics
+	// 		resultantCompletionItem = completeClassMap.get('PApplet.class')
+	// 		break
+	// 	case "PConstants":
+	// 		resultantCompletionItem = completeClassMap.get('PConstants.class')
+	// 	break
+	// 	case "PFont":
+	// 		resultantCompletionItem = completeClassMap.get('PFont.class')
+	// 		break
+	// 	case "PGraphics":
+	// 		resultantCompletionItem = completeClassMap.get('PGraphics.class')
+	// 		break
+	// 	case "PImage":
+	// 		resultantCompletionItem = completeClassMap.get('PImage.class')
+	// 		break
+	// 	case "PMatrix":
+	// 		resultantCompletionItem = completeClassMap.get('PMatrix.class')
+	// 		break
+	// 	case "PMatrix2D":
+	// 		resultantCompletionItem = completeClassMap.get('PMatrix2D.class')
+	// 		break
+	// 	case "PMatrix3D":
+	// 		resultantCompletionItem = completeClassMap.get('PMatrix3D.class')
+	// 		break
+	// 	case "PShape":
+	// 		resultantCompletionItem = completeClassMap.get('PShape.class')
+	// 		break
+	// 	case "PShapeOBJ":
+	// 		resultantCompletionItem = completeClassMap.get('PShapeOBJ.class')
+	// 		break
+	// 	case "PShapeSVG":
+	// 		resultantCompletionItem = completeClassMap.get('PShapeSVG.class')
+	// 		break
+	// 	case "PStyle":
+	// 		resultantCompletionItem = completeClassMap.get('PStyle.class')
+	// 		break
+	// 	case "PSurface":
+	// 		resultantCompletionItem = completeClassMap.get('PSurface.class')
+	// 		break
+	// 	case "PSurfaceNone":
+	// 		resultantCompletionItem = completeClassMap.get('PSurfaceNone.class')
+	// 		break
+	// 	case "PVector":
+	// 		resultantCompletionItem = completeClassMap.get('PVector.class')
+	// 		break
+	// }
 	return resultantCompletionItem
 }

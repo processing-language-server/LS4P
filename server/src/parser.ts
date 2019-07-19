@@ -2,6 +2,7 @@ import { parse } from 'java-ast'
 import { ParseTree } from 'antlr4ts/tree/ParseTree'
 import * as diagnostics from './diagnostics';
 import { TextDocument } from 'vscode-languageserver';
+import * as pStandards from './grammer/terms/preprocessingsnippets'
 const childProcess = require('child_process');
 
 // Tuple -> current Node, Parent Node
@@ -13,8 +14,11 @@ let _tokenCounter = -1
 export let wholeAST: [ParseTree, ParseTree | undefined][] = new Array();
 let _wholeCounter = -1
 
+// Currently constructed AST after the last character change
+export let ast: any
+
 export function parseAST(processedText: string, textDocument: TextDocument) {
-	let ast = parse(processedText)
+	ast = parse(processedText)
 	tokenArray = []
 	_tokenCounter = -1
 	wholeAST = []
@@ -26,20 +30,18 @@ export function parseAST(processedText: string, textDocument: TextDocument) {
 		wholeASTExtract(ast.children![i])
 	}
 
-	let fileName = textDocument.uri.split('/')
-
 	// mkdir /out/compile
 	// make sure to set .classpath for Processing core as environment variable
 	// This suites for raw java case - should handle for default and setupDraw case
 	try{
-		childProcess.execSync(`echo \'${processedText}\' > ${__dirname}/compile/${fileName[fileName.length-1].substring(0,fileName[fileName.length-1].length-4)}.java`)
-		childProcess.execSync(`javac ${__dirname}/compile/${fileName[fileName.length-1].substring(0,fileName[fileName.length-1].length-4)}.java -Xlint:none -Xstdout ${__dirname}/compile/error.txt`)
+		childProcess.execSync(`echo \'${processedText}\' > ${__dirname}/compile/${pStandards.defaultClassName}.java`)
+		childProcess.execSync(`javac ${__dirname}/compile/${pStandards.defaultClassName}.java -Xlint:none -Xstdout ${__dirname}/compile/error.txt`)
 	} catch(e){
 
 	}
 	// Write methods to handle Error in the Error Stream
 	// diagnostics.cookDiagnosticsReport(processedText)
-	diagnostics.cookCompilationDiagnostics(processedText, `${__dirname}/compile/${fileName[fileName.length-1].substring(0,fileName[fileName.length-1].length-4)}.java`)
+	diagnostics.cookCompilationDiagnostics(processedText, `${__dirname}/compile/${pStandards.defaultClassName}.java`)
 
 
 	console.log("Parsed Successfully.!")

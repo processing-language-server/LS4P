@@ -112,6 +112,7 @@ documents.onDidChangeContent(change => {
 	preprocessing.performPreProcessing(change.document)
 	// Hover disabled for now
 	// hover.checkforHoverContents(change.document)
+	// Diagnostics diabled since Auto completion is IP
 	diagnostics.checkForRealtimeDiagnostics(change.document)
 	// updateCompletionList(change.document);
 });
@@ -143,7 +144,7 @@ connection.onDidChangeWatchedFiles(_change => {
 // Perform auto-completion -> Deligated tp `completion.ts`
 connection.onCompletion(
 	(_textDocumentParams: CompletionParams): CompletionItem[] => {
-		return completion.decideCompletionMethods("PApplet")
+		return completion.decideCompletionMethods()
 	}
 );
 

@@ -145,14 +145,12 @@ export function cookCompilationDiagnostics(processedText: string, pwd: String){
 					let innerSplit = line.split(":")
 					// Handling line number based on current Behaviour - since preprocessing is done
 					if(preProcessingClass.defaultBehaviourEnable){
-						errorNodeLine[errorNodeCount] = +innerSplit[1] - 14
-					} else if(preProcessingClass.classBehaviourEnabled){
-						errorNodeLine[errorNodeCount] = +innerSplit[1] 
-					} else if(preProcessingClass.setUpDrawBehaviourEnabled){
-						errorNodeLine[errorNodeCount] = +innerSplit[1] - 7
+						errorNodeLine[errorNodeCount] = +innerSplit[1] - 11
+					} else if(preProcessingClass.methodBehaviour){
+						errorNodeLine[errorNodeCount] = +innerSplit[1] - 10
 					}
 					let localIndex = index + 1
-					errorNodeReasons[errorNodeCount] = innerSplit[3]
+					errorNodeReasons[errorNodeCount] = line.split("error:")[1]
 					while(true){
 						if(tempSplit[localIndex].includes(`${pwd}`) || 
 							tempSplit[localIndex].includes(`error`) ||
