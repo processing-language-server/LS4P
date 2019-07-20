@@ -1,5 +1,6 @@
 
 export const classChecker = `class`
+export const newChecker = `new`
 export let defaultClassName = "ProcessingDefault"
 const defaultLib = `PApplet`
 // Dynamic Imports should take format - `import __.__.__;`
@@ -10,10 +11,12 @@ import processing.event.*\;
 import processing.opengl.*\;
 import processing.javafx.*\;
 import java.util.*\;
+import java.io.*\;
+import java.lang.*\;
 `
 
-export const reduceLineDefaultBehaviour = 11
-export const reduceLineMethodBehaviour = 10
+export const reduceLineDefaultBehaviour = 13
+export const reduceLineMethodBehaviour = 12
 
 export function setDefaultClassName(className : String){
 	defaultClassName = className as string

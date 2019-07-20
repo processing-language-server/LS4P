@@ -1,10 +1,12 @@
 import * as lsp from 'vscode-languageserver';
-import { CompletionItemKind, CompletionParams } from 'vscode-languageserver';
+import { CompletionItemKind, CompletionParams, TextDocument } from 'vscode-languageserver';
 import * as preprocessing from './preprocessing'
 import * as pStandards from './grammer/terms/preprocessingsnippets'
 import * as parser from './parser';
-import { MethodBodyContext, TypeTypeOrVoidContext, TypeTypeContext } from 'java-ast/dist/parser/JavaParser';
+import { MethodBodyContext, TypeTypeOrVoidContext, TypeTypeContext, LocalVariableDeclarationContext, ClassOrInterfaceTypeContext, VariableDeclaratorIdContext } from 'java-ast/dist/parser/JavaParser';
 import { ErrorNode } from 'antlr4ts/tree/ErrorNode';
+import * as model from './grammer/terms/model'
+import { ParseTree } from 'antlr4ts/tree/ParseTree';
 const exec = require('child_process').execSync;
 const fs = require('fs');
 const { JavaClassFileReader } = require('java-class-tools')
@@ -207,14 +209,16 @@ export function findCompletionItemKind(value: number): lsp.CompletionItemKind{
 	return completionKind
 }
 
-export function decideCompletionMethods(_textDocumentParams: CompletionParams): lsp.CompletionItem[] {
+export function decideCompletionMethods(_textDocumentParams: CompletionParams, latestChanges: TextDocument): lsp.CompletionItem[] {
 	let resultantCompletionItem: lsp.CompletionItem[] = []
 	let lineStartMethodBody: number[] = []
 	let lineEndMethodBody: number[] = []
 	let avoidLineAuto: number[] = []
 	let _methodCounter: number = 0
 	let _avoidCounter: number = 0
+	let _classNameCounter: number = 0
 
+	// line starts from `0`
 	let currentLineInWorkSpace = _textDocumentParams.position.line
 
 	parser.wholeAST.forEach(function(node, index){
@@ -230,6 +234,13 @@ export function decideCompletionMethods(_textDocumentParams: CompletionParams): 
 			_avoidCounter += 1
 		}
 
+	})
+
+	parser.tokenArray.forEach(function(node, index){
+		if(node[1] instanceof ClassOrInterfaceTypeContext && parser.tokenArray[index+1][1] instanceof VariableDeclaratorIdContext){
+			model.variableDeclarationContext[_classNameCounter] = [node[0], parser.tokenArray[index+1][1]]
+			_classNameCounter += 1
+		}
 	})
 
 	if(preprocessing.defaultBehaviourEnable){
@@ -268,7 +279,23 @@ export function decideCompletionMethods(_textDocumentParams: CompletionParams): 
 		}
 	})
 
-	// methods to avoid auto compleion during method declaration.
+	// TODO: methods to avoid auto compleion during method declaration.'
+
+	let currentLineSplit = latestChanges.getText().split('\n')
+
+	if(model.variableDeclarationContext.length > 0){
+		model.variableDeclarationContext.forEach(function(value, index){
+			if(_textDocumentParams.context!.triggerCharacter == `.`){
+				let tempLine = currentLineSplit[currentLineInWorkSpace].split(`.`)[0].split(` `)
+				let objectName = tempLine[tempLine.length-1]
+				if(value[1].text == objectName){
+					resultantCompletionItem = completeClassMap.get(`${value[0].text}.class`)
+				}
+			}
+		})
+	}
+
+	model.clearVaribaleDeclarationContext()
 
 	return resultantCompletionItem
 }

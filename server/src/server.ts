@@ -6,6 +6,7 @@ import {
 	DidChangeConfigurationNotification,
 	CompletionItem,
 	CompletionParams,
+	TextDocument
 } from 'vscode-languageserver';
 
 import * as completion from './completion'
@@ -50,7 +51,7 @@ connection.onInitialize((params: InitializeParams) => {
 			textDocumentSync: documents.syncKind,
 			completionProvider: {
 				resolveProvider: true,
-				// triggerCharacters: [ '.' ]
+				triggerCharacters: [ '.' ]
 			},
 			// hoverProvider: true
 		}
@@ -108,7 +109,10 @@ documents.onDidClose(e => {
 	documentSettings.delete(e.document.uri);
 });
 
+export let latestChangesInTextDoc: TextDocument
+
 documents.onDidChangeContent(change => {
+	latestChangesInTextDoc = change.document
 	preprocessing.performPreProcessing(change.document)
 	// Hover disabled for now
 	// hover.checkforHoverContents(change.document)
@@ -144,7 +148,7 @@ connection.onDidChangeWatchedFiles(_change => {
 // Perform auto-completion -> Deligated tp `completion.ts`
 connection.onCompletion(
 	(_textDocumentParams: CompletionParams): CompletionItem[] => {
-		return completion.decideCompletionMethods(_textDocumentParams)
+		return completion.decideCompletionMethods(_textDocumentParams, latestChangesInTextDoc)
 	}
 );
 
