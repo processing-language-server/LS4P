@@ -3,8 +3,9 @@ import { CompletionItemKind, CompletionParams, TextDocument } from 'vscode-langu
 import * as preprocessing from './preprocessing'
 import * as pStandards from './grammer/terms/preprocessingsnippets'
 import * as parser from './parser';
-import { MethodBodyContext, TypeTypeOrVoidContext, TypeTypeContext, LocalVariableDeclarationContext, ClassOrInterfaceTypeContext, VariableDeclaratorIdContext } from 'java-ast/dist/parser/JavaParser';
+import { MethodBodyContext, ClassOrInterfaceTypeContext, VariableDeclaratorIdContext} from 'java-ast/dist/parser/JavaParser';
 import { ErrorNode } from 'antlr4ts/tree/ErrorNode';
+import * as astUtils from './astutils'
 import * as model from './grammer/terms/model'
 import { ParseTree } from 'antlr4ts/tree/ParseTree';
 const exec = require('child_process').execSync;
@@ -281,6 +282,7 @@ export function decideCompletionMethods(_textDocumentParams: CompletionParams, l
 
 	// TODO: methods to avoid auto compleion during method declaration.'
 
+	// Produces dynamic auto completion results on the presence of Trigger Character `.`
 	let currentLineSplit = latestChanges.getText().split('\n')
 
 	if(model.variableDeclarationContext.length > 0){
@@ -290,12 +292,18 @@ export function decideCompletionMethods(_textDocumentParams: CompletionParams, l
 				let objectName = tempLine[tempLine.length-1]
 				if(value[1].text == objectName){
 					resultantCompletionItem = completeClassMap.get(`${value[0].text}.class`)
+					if(resultantCompletionItem == []){
+						// Handle for locally declared classes
+					}
 				}
 			}
 		})
 	}
 
+	// Local class declaration and their dependent fields / methods for auto completion
+
 	model.clearVaribaleDeclarationContext()
+	model.clearLocalClassDeclarators()
 
 	return resultantCompletionItem
 }

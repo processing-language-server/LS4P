@@ -23,7 +23,7 @@ export function setDefaultClassName(className : String){
 }
 
 // dynamic imports can increase in line number so handle it properly when it comes to dyagnostic line positions
-export function defaultBehaviour(unProcessedTest: String): String {
+export function setupBehaviour(unProcessedTest: String): String {
 	let processedText = `
 ${dynamicImports}
 public class ${defaultClassName} extends ${defaultLib}{

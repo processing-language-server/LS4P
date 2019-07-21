@@ -3,6 +3,7 @@ import { ParseTree } from 'antlr4ts/tree/ParseTree'
 import * as diagnostics from './diagnostics';
 import { TextDocument } from 'vscode-languageserver';
 import * as pStandards from './grammer/terms/preprocessingsnippets'
+import * as astUtils from './astutils'
 const childProcess = require('child_process');
 
 // Tuple -> current Node, Parent Node
@@ -31,6 +32,18 @@ export function parseAST(processedText: string, textDocument: TextDocument) {
 	}
 
 	console.log("Break point here to obtain AST")
+
+	astUtils.constructClassParams(tokenArray)
+	let classTest = astUtils.classNames
+	let filedTest = astUtils.fieldNames
+	let memberTest = astUtils.memberNames
+	let FCTest = astUtils.fieldAndClass
+	let MCTest = astUtils.memberAndClass
+	astUtils.clearClassName()
+	astUtils.clearFieldName()
+	astUtils.clearMemberName()
+	astUtils.clearFieldAndClass()
+	astUtils.clearMemberAndClass()
 
 	// mkdir /out/compile
 	// make sure to set .classpath for Processing core as environment variable
