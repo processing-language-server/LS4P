@@ -16,8 +16,12 @@ export const reader = new JavaClassFileReader();
 
 // exec(`mkdir ${__dirname}/processing/extractor`)
 // exec(`mkdir ${__dirname}/processing/container`)
+// exec(`mkdir ${__dirname}/processing/custom`)
+// exec(`mkdir ${__dirname}/processing/customcontainer`)
 // exec(`mv ${__dirname.substring(0,__dirname.length-4)}/src/processing/class ${__dirname}/processing`)
 exec(`unzip -o ${__dirname.substring(0,__dirname.length-4)}/src/processing/jar/core.jar -d ${__dirname}/processing/extractor`)
+exec(`unzip -o ${__dirname.substring(0,__dirname.length-4)}/src/processing/jar/custom.jar -d ${__dirname}/processing/custom`)
+exec(`ls ${__dirname}/processing/custom | tee ${__dirname}/processing/customcontainer/custom.txt`)
 exec(`ls ${__dirname}/processing/extractor/processing/core | tee ${__dirname}/processing/container/core.txt`)
 exec(`ls ${__dirname}/processing/extractor/processing/awt | tee ${__dirname}/processing/container/awt.txt`)
 exec(`ls ${__dirname}/processing/extractor/processing/data | tee ${__dirname}/processing/container/data.txt`)
@@ -65,6 +69,26 @@ for(let _counter: number = 0; _counter < 6; _counter++){
 }
 
 initAllCompletionClasses()
+
+function initAllCompletionClasses(){
+	extractionModuleType.forEach(function(value){
+		classMap.get(value).forEach((element: String) => {
+			completeClassMap.set(element, PCompletionMethods(reader.read(`${__dirname}/processing/extractor/processing/${value}/${element}`)))
+		})
+	})
+}
+
+let completeCustomMap = new Map()
+
+try{
+	let data = fs.readFileSync(`${__dirname}/processing/customcontainer/custom.txt`, 'utf-8')
+	let customSplitMap = data.split('\n')
+	customSplitMap.forEach(function(value: string){
+		if(value.includes(`.class`)){
+			completeCustomMap.set(value, PCompletionMethods(reader.read(`${__dirname}/processing/custom/${value}`)))
+		}
+	})
+} catch(e) {}
 
 export function asCompletionItem(
 	completionEntry: string, completionType: lsp.CompletionItemKind): lsp.CompletionItem {
@@ -116,14 +140,6 @@ function PCompletionMethods(classType: any): lsp.CompletionItem[] {
 	})
 
 	return completionItemList
-}
-
-function initAllCompletionClasses(){
-	extractionModuleType.forEach(function(value){
-		classMap.get(value).forEach((element: String) => {
-			completeClassMap.set(element, PCompletionMethods(reader.read(`${__dirname}/processing/extractor/processing/${value}/${element}`)))
-		})
-	})
 }
 
 export function findCompletionItemKind(value: number): lsp.CompletionItemKind{
@@ -285,6 +301,12 @@ export function decideCompletionMethods(_textDocumentParams: CompletionParams, l
 	// Produces dynamic auto completion results on the presence of Trigger Character `.`
 	let currentLineSplit = latestChanges.getText().split('\n')
 
+	if(_textDocumentParams.context!.triggerCharacter == `.`){
+		let tempLine = currentLineSplit[currentLineInWorkSpace].split(`.`)[0].split(` `)
+		let objectName = tempLine[tempLine.length-1]
+		resultantCompletionItem = completeClassMap.get(`${objectName}.class`)
+	}
+
 	if(model.variableDeclarationContext.length > 0){
 		model.variableDeclarationContext.forEach(function(value, index){
 			if(_textDocumentParams.context!.triggerCharacter == `.`){
@@ -293,24 +315,27 @@ export function decideCompletionMethods(_textDocumentParams: CompletionParams, l
 				if(value[1].text == objectName){
 					resultantCompletionItem = completeClassMap.get(`${value[0].text}.class`)
 					if(resultantCompletionItem == undefined){
-						// Handle for locally declared classes
-						astUtils.constructClassParams(parser.tokenArray)
-						let tempCompletionList: lsp.CompletionItem[] = []
-						let _tempCounter = 0
-						astUtils.fieldAndClass.forEach(function(fieldName,index){
-							if(fieldName[0] == value[0].text){
-								tempCompletionList[_tempCounter] = asCompletionItem(fieldName[1], findCompletionItemKind(5))
-								_tempCounter += 1
-							}
-						})
-						astUtils.memberAndClass.forEach(function(methodName,index){
-							if(methodName[0] == value[0].text){
-								tempCompletionList[_tempCounter] = asCompletionItem(`${methodName[1]}()`, findCompletionItemKind(2))
-								_tempCounter += 1
-							}
-						})
-						resultantCompletionItem = tempCompletionList
-						astUtils.flushRecords()
+						resultantCompletionItem = completeCustomMap.get(`${value[0].text}.class`)
+						if(resultantCompletionItem == undefined){
+							// Handle for locally declared classes
+							astUtils.constructClassParams(parser.tokenArray)
+							let tempCompletionList: lsp.CompletionItem[] = []
+							let _tempCounter = 0
+							astUtils.fieldAndClass.forEach(function(fieldName,index){
+								if(fieldName[0] == value[0].text){
+									tempCompletionList[_tempCounter] = asCompletionItem(fieldName[1], findCompletionItemKind(5))
+									_tempCounter += 1
+								}
+							})
+							astUtils.memberAndClass.forEach(function(methodName,index){
+								if(methodName[0] == value[0].text){
+									tempCompletionList[_tempCounter] = asCompletionItem(`${methodName[1]}()`, findCompletionItemKind(2))
+									_tempCounter += 1
+								}
+							})
+							resultantCompletionItem = tempCompletionList
+							astUtils.flushRecords()
+						}
 					}
 				}
 			}
