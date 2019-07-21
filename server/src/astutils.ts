@@ -1,5 +1,5 @@
 import { ParseTree } from 'antlr4ts/tree/ParseTree'
-import { ClassBodyContext, ClassDeclarationContext, MemberDeclarationContext, VariableDeclaratorIdContext, MethodDeclarationContext } from 'java-ast/dist/parser/JavaParser';
+import { ClassDeclarationContext, VariableDeclaratorIdContext, MethodDeclarationContext } from 'java-ast/dist/parser/JavaParser';
 
 export let memberNames: string[] = []
 export let numberOfMembers = 0
@@ -13,7 +13,6 @@ export let memberAndClass: [string,string][] = []
 export let MCCount = 0
 
 export function constructClassParams(tokenArr: [ParseTree, ParseTree][]){
-	let extractedAllClassTokens: [ParseTree, ParseTree][] = []
 	tokenArr.forEach(function(node, index){
 		if(node[1] instanceof ClassDeclarationContext && node[0].text == `class`){
 			classNames[numberOfClasses] = tokenArr[index+1][0].text
@@ -62,4 +61,12 @@ export function clearFieldAndClass(){
 export function clearMemberAndClass(){
 	memberAndClass = []
 	MCCount = 0
+}
+
+export function flushRecords(){
+	clearClassName()
+	clearFieldName()
+	clearMemberName()
+	clearFieldAndClass()
+	clearMemberAndClass()
 }

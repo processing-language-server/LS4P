@@ -292,8 +292,25 @@ export function decideCompletionMethods(_textDocumentParams: CompletionParams, l
 				let objectName = tempLine[tempLine.length-1]
 				if(value[1].text == objectName){
 					resultantCompletionItem = completeClassMap.get(`${value[0].text}.class`)
-					if(resultantCompletionItem == []){
+					if(resultantCompletionItem == undefined){
 						// Handle for locally declared classes
+						astUtils.constructClassParams(parser.tokenArray)
+						let tempCompletionList: lsp.CompletionItem[] = []
+						let _tempCounter = 0
+						astUtils.fieldAndClass.forEach(function(fieldName,index){
+							if(fieldName[0] == value[0].text){
+								tempCompletionList[_tempCounter] = asCompletionItem(fieldName[1], findCompletionItemKind(5))
+								_tempCounter += 1
+							}
+						})
+						astUtils.memberAndClass.forEach(function(methodName,index){
+							if(methodName[0] == value[0].text){
+								tempCompletionList[_tempCounter] = asCompletionItem(`${methodName[1]}()`, findCompletionItemKind(2))
+								_tempCounter += 1
+							}
+						})
+						resultantCompletionItem = tempCompletionList
+						astUtils.flushRecords()
 					}
 				}
 			}

@@ -16,6 +16,7 @@ export function clearVaribaleDeclarationContext() {
 // 		}
 // 	   }
 // [Sample, a, method()]
+// Currently handled by `astUtils`
 export let localClassDeclaratorContext: [ParseTree, ParseTree[], ParseTree[]][] = new Array()
 
 export function clearLocalClassDeclarators(){
