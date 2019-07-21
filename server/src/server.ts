@@ -1,36 +1,26 @@
 import {
 	createConnection,
 	TextDocuments,
-	TextDocument,
-	Diagnostic,
-	DiagnosticSeverity,
 	ProposedFeatures,
 	InitializeParams,
 	DidChangeConfigurationNotification,
 	CompletionItem,
-	TextDocumentPositionParams,
-	Hover,
-	Position,
 	CompletionParams,
-	CompletionContext
+	TextDocument
 } from 'vscode-languageserver';
 
-import * as completion from "./completion"
+import * as completion from './completion'
+import * as diagnostics from './diagnostics'
+import * as hover from './hover'
+import * as preprocessing from './preprocessing'
 
-let connection = createConnection(ProposedFeatures.all);
+export let connection = createConnection(ProposedFeatures.all);
 
 let documents: TextDocuments = new TextDocuments();
 
 let hasConfigurationCapability: boolean = false;
 let hasWorkspaceFolderCapability: boolean = false;
-let hasDiagnosticRelatedInformationCapability: boolean = false;
-
-let initialPositionObj : Position = {
-	line: 0,
-	character: 1
-}
-let currentCursorPosition: Position
-let modularCompletionItemEnabled: Boolean = false
+export let hasDiagnosticRelatedInformationCapability: boolean = false;
 
 connection.onInitialize((params: InitializeParams) => {
 	let capabilities = params.capabilities;
@@ -47,8 +37,6 @@ connection.onInitialize((params: InitializeParams) => {
 		capabilities.textDocument.publishDiagnostics.relatedInformation
 	);
 
-	currentCursorPosition = initialPositionObj
-
 	return {
 		capabilities: {
 			textDocumentSync: documents.syncKind,
@@ -56,7 +44,7 @@ connection.onInitialize((params: InitializeParams) => {
 				resolveProvider: true,
 				triggerCharacters: [ '.' ]
 			},
-			hoverProvider: true
+			// hoverProvider: true
 		}
 	};
 });
@@ -90,10 +78,10 @@ connection.onDidChangeConfiguration(change => {
 		);
 	}
 
-	documents.all().forEach(checkforDiagnostics);
+	documents.all().forEach(diagnostics.checkForRealtimeDiagnostics);
 });
 
-function getDocumentSettings(resource: string): Thenable<ExampleSettings> {
+export function getDocumentSettings(resource: string): Thenable<ExampleSettings> {
 	if (!hasConfigurationCapability) {
 		return Promise.resolve(globalSettings);
 	}
@@ -112,111 +100,26 @@ documents.onDidClose(e => {
 	documentSettings.delete(e.document.uri);
 });
 
+export let latestChangesInTextDoc: TextDocument
+
 documents.onDidChangeContent(change => {
-	checkforDiagnostics(change.document);
-	checkforHoverContents(change.document);
-	updateCompletionList(change.document);
+	latestChangesInTextDoc = change.document
+	preprocessing.performPreProcessing(change.document)
+	// Hover disabled for now
+	// hover.checkforHoverContents(change.document)
+	// Diagnostics diabled since Auto completion is IP
+	diagnostics.checkForRealtimeDiagnostics(change.document)
+	// updateCompletionList(change.document);
 });
-
-async function updateCompletionList(textDocument: TextDocument): Promise<void>{
-	let textPosition = textDocument.offsetAt(currentCursorPosition);
-	let text = textDocument.getText();
-	if((text.charAt(textPosition).toString() === '.') && !(text.charAt(textPosition-1).toString() === ')')){
-		// Produce modular auto-completion results with respect to the preceeding AST Node.
-		// completion.cookModularCompletionList()
-		modularCompletionItemEnabled = true
-	} else {
-		// completion.prepareCompletionList()
-		modularCompletionItemEnabled = false
-	}
-}
-
-// Hover on context - setup
-async function checkforHoverContents(textDocument: TextDocument): Promise<void>{
-	let text = textDocument.getText();
-	let checkContents = 'setup';
-	let hover : Hover
-
-	if(text.includes(checkContents)){
-		hover = {
-			contents:{
-				language: 'processing',
-				value: 'this is the hover text that appears when you hover over setup'
-			},
-			range: {
-				start: textDocument.positionAt(0),
-				end: textDocument.positionAt(3)
-			}
-		}
-	}
-
-	connection.onHover(
-		(params: TextDocumentPositionParams): Hover => {
-			return hover
-		}
-	)
-}
-
-// Send Diagnostic reports
-async function checkforDiagnostics(textDocument: TextDocument): Promise<void> {
-	let settings = await getDocumentSettings(textDocument.uri);
-
-	let text = textDocument.getText();
-	let pattern = /\b[A-Z]{2,}\b/g;
-	let m: RegExpExecArray | null;
-
-	let problems = 0;
-	let diagnostics: Diagnostic[] = [];
-	while ((m = pattern.exec(text)) && problems < settings.maxNumberOfProblems) {
-		problems++;
-		let diagnostic: Diagnostic = {
-			severity: DiagnosticSeverity.Hint,
-			range: {
-				start: textDocument.positionAt(m.index),
-				end: textDocument.positionAt(m.index + m[0].length)
-			},
-			message: `${m[0]} is all uppercase.`,
-			source: 'syntax grammer'
-		};
-		if (hasDiagnosticRelatedInformationCapability) {
-			diagnostic.relatedInformation = [
-				{
-					location: {
-						uri: textDocument.uri,
-						range: Object.assign({}, diagnostic.range)
-					},
-					message: 'Unrecognized'
-				},
-				{
-					location: {
-						uri: textDocument.uri,
-						range: Object.assign({}, diagnostic.range)
-					},
-					message: 'Pattern Mismatch'
-				}
-			];
-		}
-		diagnostics.push(diagnostic);
-	}
-
-	connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
-}
 
 connection.onDidChangeWatchedFiles(_change => {
 	connection.console.log('We received an file change event');
 });
 
-let requestCompletionContext : CompletionContext = {
-	triggerKind: 1,
-	triggerCharacter: '.',
-}
-
 // Perform auto-completion -> Deligated tp `completion.ts`
 connection.onCompletion(
 	(_textDocumentParams: CompletionParams): CompletionItem[] => {
-		_textDocumentParams.context = requestCompletionContext
-		currentCursorPosition = _textDocumentParams.position
-		return modularCompletionItemEnabled ? completion.generateModular("PImage") : completion.prepareCompletionList()
+		return completion.decideCompletionMethods(_textDocumentParams, latestChangesInTextDoc)
 	}
 );
 
@@ -225,14 +128,11 @@ connection.onCompletionResolve(
 	(item: CompletionItem): CompletionItem => {
 		// use `item.label`
 		if (item.data === 1) {
-			item.detail = 'Test Details 1';
-			item.documentation = 'Test Documentation 1';
-		} else if (item.data === 2) {
-			item.detail = 'Test Details 2';
-			item.documentation = 'Test Documentation 2';
+			item.detail = 'Field Details';
+			item.documentation = 'Field Documentation';
 		} else {
-			item.detail = 'Test details Else';
-			item.documentation = 'Test Documentation Else';
+			item.detail = 'Field Details';
+			item.documentation = 'Field Documentation';
 		}
 		return item;
 	}

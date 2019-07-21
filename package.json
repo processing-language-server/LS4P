@@ -60,6 +60,12 @@
 				"path": "./syntax/pde.tmLanguage.json"
 			}
 		],
+		"snippets": [
+			{
+				"language": "processing",
+				"path": "./snippets.json"
+			}
+		],
 		"iconThemes": [
 			{
 				"id": "processingTheme",
