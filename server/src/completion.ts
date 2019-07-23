@@ -240,12 +240,14 @@ export function decideCompletionMethods(_textDocumentParams: CompletionParams, l
 
 	parser.wholeAST.forEach(function(node, index){
 
+		// Start and end line of all methods
 		if(node[0] instanceof MethodBodyContext){
 			lineStartMethodBody[_methodCounter] = node[0]._start.line
 			lineEndMethodBody[_methodCounter] = node[0]._stop!.line
 			_methodCounter += 1
 		}
 
+		// Error nodes to avoid auto completion of those
 		if(node[0] instanceof ErrorNode){
 			avoidLineAuto[_avoidCounter] = node[0]._symbol.line
 			_avoidCounter += 1
@@ -253,6 +255,7 @@ export function decideCompletionMethods(_textDocumentParams: CompletionParams, l
 
 	})
 
+	// Data Store for Variable declaration and class instantiations
 	parser.tokenArray.forEach(function(node, index){
 		if(node[1] instanceof ClassOrInterfaceTypeContext && parser.tokenArray[index+1][1] instanceof VariableDeclaratorIdContext){
 			model.variableDeclarationContext[_classNameCounter] = [node[0], parser.tokenArray[index+1][1]]
@@ -260,6 +263,7 @@ export function decideCompletionMethods(_textDocumentParams: CompletionParams, l
 		}
 	})
 
+	// Line adjustment in the workspace because of proprocessing
 	if(preprocessing.defaultBehaviourEnable){
 		lineStartMethodBody.forEach(function(value, index){
 			lineStartMethodBody[index] = value - pStandards.reduceLineDefaultBehaviour
@@ -282,12 +286,14 @@ export function decideCompletionMethods(_textDocumentParams: CompletionParams, l
 		})
 	}
 
+	// Space to invoke auto completion -> inside method
 	lineStartMethodBody.forEach(function(value, index){
 		if(value <= currentLineInWorkSpace && lineEndMethodBody[index] >= currentLineInWorkSpace){
 			resultantCompletionItem = completeClassMap.get(`${currentCompletionClass}.class`)
 		}
 	})
 
+	// Space to avoid auto completion -> Error nodes
 	avoidLineAuto.forEach(function(value,index){
 		// since the index in workspace starts with `0` -> currentLineInWorkSpace + 2 (1st -> variable declaration, 2nd -> no autocompletion for variable names)
 		// avoid auto completion while naming varaibles
@@ -301,6 +307,7 @@ export function decideCompletionMethods(_textDocumentParams: CompletionParams, l
 	// Produces dynamic auto completion results on the presence of Trigger Character `.`
 	let currentLineSplit = latestChanges.getText().split('\n')
 
+	// Processing specific classes auto completion on Class Names itself
 	if(_textDocumentParams.context!.triggerCharacter == `.`){
 		let tempLine = currentLineSplit[currentLineInWorkSpace].split(`.`)[0].split(` `)
 		let objectName = tempLine[tempLine.length-1]
@@ -313,11 +320,13 @@ export function decideCompletionMethods(_textDocumentParams: CompletionParams, l
 				let tempLine = currentLineSplit[currentLineInWorkSpace].split(`.`)[0].split(` `)
 				let objectName = tempLine[tempLine.length-1]
 				if(value[1].text == objectName){
+					// Processing specific classes auto completion on object of a class in Processing
 					resultantCompletionItem = completeClassMap.get(`${value[0].text}.class`)
 					if(resultantCompletionItem == undefined){
+						// Java specific auto completion
 						resultantCompletionItem = completeCustomMap.get(`${value[0].text}.class`)
 						if(resultantCompletionItem == undefined){
-							// Handle for locally declared classes
+							// Local class declaration and their dependent fields / methods for auto completion
 							astUtils.constructClassParams(parser.tokenArray)
 							let tempCompletionList: lsp.CompletionItem[] = []
 							let _tempCounter = 0
@@ -341,8 +350,6 @@ export function decideCompletionMethods(_textDocumentParams: CompletionParams, l
 			}
 		})
 	}
-
-	// Local class declaration and their dependent fields / methods for auto completion
 
 	model.clearVaribaleDeclarationContext()
 	model.clearLocalClassDeclarators()

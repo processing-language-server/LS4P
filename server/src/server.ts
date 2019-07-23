@@ -44,7 +44,7 @@ connection.onInitialize((params: InitializeParams) => {
 				resolveProvider: true,
 				triggerCharacters: [ '.' ]
 			},
-			// hoverProvider: true
+			hoverProvider: true
 		}
 	};
 });
@@ -105,11 +105,8 @@ export let latestChangesInTextDoc: TextDocument
 documents.onDidChangeContent(change => {
 	latestChangesInTextDoc = change.document
 	preprocessing.performPreProcessing(change.document)
-	// Hover disabled for now
-	// hover.checkforHoverContents(change.document)
-	// Diagnostics diabled since Auto completion is IP
+	hover.checkforHoverContents(change.document)
 	diagnostics.checkForRealtimeDiagnostics(change.document)
-	// updateCompletionList(change.document);
 });
 
 connection.onDidChangeWatchedFiles(_change => {

@@ -33,18 +33,6 @@ export function parseAST(processedText: string, textDocument: TextDocument) {
 
 	console.log("Break point here to obtain AST")
 
-	astUtils.constructClassParams(tokenArray)
-	let classTest = astUtils.classNames
-	let filedTest = astUtils.fieldNames
-	let memberTest = astUtils.memberNames
-	let FCTest = astUtils.fieldAndClass
-	let MCTest = astUtils.memberAndClass
-	astUtils.clearClassName()
-	astUtils.clearFieldName()
-	astUtils.clearMemberName()
-	astUtils.clearFieldAndClass()
-	astUtils.clearMemberAndClass()
-
 	// mkdir /out/compile
 	// make sure to set .classpath for Processing core as environment variable
 	// This suites for raw java case - should handle for default and setupDraw case
