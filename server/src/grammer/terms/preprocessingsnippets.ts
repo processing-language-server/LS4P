@@ -15,8 +15,8 @@ import java.io.*\;
 import java.lang.*\;
 `
 
-export const reduceLineDefaultBehaviour = 13
-export const reduceLineMethodBehaviour = 12
+export const reduceLineDefaultBehaviour = 16
+export const reduceLineMethodBehaviour = 15
 
 export function setDefaultClassName(className : String){
 	defaultClassName = className as string
@@ -27,6 +27,9 @@ export function setupBehaviour(unProcessedTest: String): String {
 	let processedText = `
 ${dynamicImports}
 public class ${defaultClassName} extends ${defaultLib}{
+public static void main(String[] args) {
+PApplet.main(\"${defaultClassName}\");
+}
 public void setup(){
 ${unProcessedTest}
 }
@@ -40,6 +43,9 @@ export function methodBehaviour(unProcessedTest: String): String {
 	let processedText = `
 ${dynamicImports}
 public class ${defaultClassName} extends ${defaultLib}{
+public static void main(String[] args) {
+PApplet.main(\"${defaultClassName}\");
+}
 ${unProcessedTest}
 }
 `

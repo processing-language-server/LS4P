@@ -17,7 +17,8 @@
 		"vscode": "^1.23.0"
 	},
 	"activationEvents": [
-		"onLanguage:processing"
+		"onLanguage:processing",
+		"onCommand:extension.processing"
 	],
 	"main": "./client/out/extension",
 	"contributes": {
@@ -28,6 +29,12 @@
 					".pde"
 				],
 				"configuration": "./language-configuration.json"
+			}
+		],
+		"commands": [
+			{
+				"command": "extension.processing",
+				"title": "Run Processing Sketch"
 			}
 		],
 		"configuration": {

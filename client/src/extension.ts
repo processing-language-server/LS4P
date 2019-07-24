@@ -1,5 +1,6 @@
 import * as path from 'path';
-import { workspace, ExtensionContext } from 'vscode';
+import { workspace, ExtensionContext,commands,window } from 'vscode';
+const childProcess = require('child_process');
 
 import {
 	LanguageClient,
@@ -41,6 +42,21 @@ export function activate(context: ExtensionContext) {
 		serverOptions,
 		clientOptions
 	);
+
+	let disposable = commands.registerCommand('extension.processing', () => {
+		// Running the Sketch entered in Extension Host
+		window.showInformationMessage(`Running Processing Sketch.!`);
+		try{
+			// exec(`mkdir client/out/class`)
+			childProcess.exec(`cp ${__dirname.substring(0,__dirname.length-11)}/server/out/compile/ProcessingDefault.class ${__dirname}/class`)
+			childProcess.exec(`cd ./client/out/class ; java ProcessingDefault`)
+		} catch(e){
+			window.showInformationMessage(`Error occured while running sketch.! ${__dirname.substring(0,__dirname.length-11)}/server/out/compile/ProcessingDefault`);
+		}
+
+	});
+
+	context.subscriptions.push(disposable);
 
 	client.start();
 }
