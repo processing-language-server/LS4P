@@ -21,10 +21,10 @@ import java.lang.*\;
 export let reduceLineDefaultBehaviour = 14 
 export let reduceLineMethodBehaviour = 13 
 
-let sizePattern = /(size)\([0-9]+\,[0-9]+\)\;/
+let sizePattern = /(size)\([ ]*[0-9]+[ ]*\,[ ]*[0-9]+[ ]*\)\;/
 let fullScreenPattern = /(fullScreen)\(\)\;/
-let smoothPattern = /(smooth)\([0-9]+\)/
-let noSmoothPatterns = /(noSmooth)\(\)/
+let smoothPattern = /(smooth)\([ ]*[0-9]+[ ]*\)\;/
+let noSmoothPatterns = /(noSmooth)\(\)\;/
 
 export let settingsContext = ""
 export let isSettingsRequired = false
@@ -72,29 +72,28 @@ export function mapperPipeline(){
 // Takes in Unprocessed Text and returns UnProcessed Text with the `settings` lines stripped out
 export function settingsRenderPipeline(unProcessedTest: String): String {
 	let recordLine = unProcessedTest.split(`\n`)
-	let newUnProcessedText = ""
-	let _check = 0
+	let newUnProcessedText = ``
 	recordLine.forEach(function(line){
 		if(sizePattern.exec(line)){
 			moveToSettings(line)
-			_check += 1
 		}
 		if(fullScreenPattern.exec(line)){
 			moveToSettings(line)
-			_check += 1
 		}
 		if(smoothPattern.exec(line)){
 			moveToSettings(line)
-			_check += 1
 		}
 		if(noSmoothPatterns.exec(line)){
 			moveToSettings(line)
-			_check += 1
 		}
-		if(_check == 0){
-			newUnProcessedText = `${newUnProcessedText}\n${line}`
-			// settingsLineCounter += 1
+	})
+	recordLine.forEach(function(line,index){
+		if(sizePattern.exec(line) || fullScreenPattern.exec(line) || smoothPattern.exec(line) || noSmoothPatterns.exec(line)){
+			recordLine[index] = ``
 		}
+	})
+	recordLine.forEach(function(line){
+		newUnProcessedText = `${newUnProcessedText}\n${line}`
 	})
 	return newUnProcessedText
 }
@@ -116,6 +115,9 @@ function settingsPreprocessing(): String{
 public void settings(){
 ${settingsContext}
 }`
+	} else {
+		settingsContext = ``
+		disableSettingsBeforeParse()
 	}
 	return generateSettings
 }
