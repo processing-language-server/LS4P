@@ -49,9 +49,9 @@ export function activate(context: ExtensionContext) {
 		try{
 			// exec(`mkdir client/out/class`)
 			childProcess.exec(`cp ${__dirname.substring(0,__dirname.length-11)}/server/out/compile/ProcessingDefault.class ${__dirname}/class`)
-			childProcess.exec(`cd ./client/out/class ; java ProcessingDefault`)
+			childProcess.exec(`cd ${__dirname.substring(0,__dirname.length-11)}/client/out/class ; java ProcessingDefault`)
 		} catch(e){
-			window.showInformationMessage(`Error occured while running sketch.! ${__dirname.substring(0,__dirname.length-11)}/server/out/compile/ProcessingDefault`);
+			window.showInformationMessage(`Error occured while running sketch.!`);
 		}
 
 	});

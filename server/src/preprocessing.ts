@@ -17,11 +17,14 @@ export async function performPreProcessing(textDocument: lsp.TextDocument): Prom
 	// TODO: Handle preprocessing Properly:
 	// case 1 -> class and a method inside it without a method in the plain sketch
 	// case 2 -> class and a method inside it with a method in the plain sketch
-	if(methodPattern.exec(unProcessedText)) {
-		processedText = pStandards.methodBehaviour(unProcessedText)
+
+	pStandards.disableSettingsBeforeParse()
+
+	if(methodPattern.exec(pStandards.settingsRenderPipeline(unProcessedText) as string)) {
+		processedText = pStandards.methodBehaviour(pStandards.settingsRenderPipeline(unProcessedText))
 		setBehaviours(false,true)
 	} else {
-		processedText = pStandards.setupBehaviour(unProcessedText)
+		processedText = pStandards.setupBehaviour(pStandards.settingsRenderPipeline(unProcessedText))
 		setBehaviours(true,false)
 	}
 	parser.parseAST(processedText as string, textDocument)
