@@ -28,6 +28,7 @@ let noSmoothPatterns = /(noSmooth)\(\)\;/
 
 export let settingsContext = ""
 export let isSettingsRequired = false
+let settingsSet = new Set()
 
 export function setDefaultClassName(className : String){
 	defaultClassName = className as string
@@ -87,6 +88,7 @@ export function settingsRenderPipeline(unProcessedTest: String): String {
 			moveToSettings(line)
 		}
 	})
+	cookSettingsContext(unProcessedTest)
 	recordLine.forEach(function(line,index){
 		if(sizePattern.exec(line) || fullScreenPattern.exec(line) || smoothPattern.exec(line) || noSmoothPatterns.exec(line)){
 			recordLine[index] = ``
@@ -105,7 +107,16 @@ export function disableSettingsBeforeParse() {
 // TODO - appends a new line for every character change after settings is initiated - fix it
 function moveToSettings(line: String) {
 	isSettingsRequired = true
-	settingsContext = `${settingsContext}\n${line}`
+	settingsSet.add(line);
+}
+
+function cookSettingsContext(unProcessedTest: String){
+	settingsContext = ``
+	settingsSet.forEach(function(setting : any){
+		if(unProcessedTest.includes(setting)){
+			settingsContext = `${settingsContext}\n${setting}`
+		}
+	})
 }
 
 function settingsPreprocessing(): String{
