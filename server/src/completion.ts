@@ -48,6 +48,7 @@ let extractionModuleType = [
 ]
 
 let currentCompletionClass = `PApplet`
+let completionConstantClass = `PConstants`
 
 let classMap = new Map()
 let completeClassMap = new Map()
@@ -284,7 +285,8 @@ export function decideCompletionMethods(_textDocumentParams: CompletionParams, l
 
 	lineStartMethodBody.forEach(function(value, index){
 		if(value <= currentLineInWorkSpace && lineEndMethodBody[index] >= currentLineInWorkSpace){
-			resultantCompletionItem = completeClassMap.get(`${currentCompletionClass}.class`)
+			// Default completion class members -> PApplet and PConstants
+			resultantCompletionItem = completeClassMap.get(`${currentCompletionClass}.class`).concat(completeClassMap.get(`${completionConstantClass}.class`))
 		}
 	})
 

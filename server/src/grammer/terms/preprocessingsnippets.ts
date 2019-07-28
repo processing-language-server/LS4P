@@ -74,9 +74,10 @@ export function mapperPipeline(){
 export function settingsRenderPipeline(unProcessedTest: String): String {
 	let recordLine = unProcessedTest.split(`\n`)
 	let newUnProcessedText = ``
+	// Fixes method scoping for methods unassigned access specifiers
 	recordLine.forEach(function(line,index){
 		if(preprocessing.methodPattern.exec(line) && !(line.includes(`public`) || line.includes(`private`) || line.includes(`protected`))){
-			recordLine[index] = `public ${line}`
+			recordLine[index] = `public ${line.trimLeft()}`
 		}
 	})
 	recordLine.forEach(function(line){
