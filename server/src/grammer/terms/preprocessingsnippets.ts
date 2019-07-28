@@ -1,4 +1,4 @@
-
+import * as preprocessing from '../../preprocessing'
 export const classChecker = `class`
 export const newChecker = `new`
 export let defaultClassName = "ProcessingDefault"
@@ -74,6 +74,11 @@ export function mapperPipeline(){
 export function settingsRenderPipeline(unProcessedTest: String): String {
 	let recordLine = unProcessedTest.split(`\n`)
 	let newUnProcessedText = ``
+	recordLine.forEach(function(line,index){
+		if(preprocessing.methodPattern.exec(line) && !(line.includes(`public`) || line.includes(`private`) || line.includes(`protected`))){
+			recordLine[index] = `public ${line}`
+		}
+	})
 	recordLine.forEach(function(line){
 		if(sizePattern.exec(line)){
 			moveToSettings(line)

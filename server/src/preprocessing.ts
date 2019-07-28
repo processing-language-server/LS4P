@@ -5,7 +5,7 @@ import * as parser from './parser'
 export let defaultBehaviourEnable = false
 export let methodBehaviourEnable = false
 
-let methodPattern = /[\w\<\>\[\]]+\s+(\w+) *\([^\)]*\) *(\{)/
+export let methodPattern = /[\w\<\>\[\]]+\s+(\w+) *\([^\)]*\) *(\{)/
 
 export async function performPreProcessing(textDocument: lsp.TextDocument): Promise<void>{
 	let unProcessedText = textDocument.getText()
