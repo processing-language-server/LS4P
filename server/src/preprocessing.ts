@@ -4,7 +4,6 @@ import * as parser from './parser'
 import { parse } from 'java-ast'
 import { ParseTree } from 'antlr4ts/tree/ParseTree'
 import { MethodDeclarationContext } from 'java-ast/dist/parser/JavaParser';
-import { TerminalNode } from 'antlr4ts/tree/TerminalNode';
 
 export let defaultBehaviourEnable = false
 export let methodBehaviourEnable = false
