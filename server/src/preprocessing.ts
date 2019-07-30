@@ -49,8 +49,10 @@ export async function performPreProcessing(textDocument: lsp.TextDocument): Prom
  
 	pStandards.disableSettingsBeforeParse()
 
+	let settingsPipelineResult = pStandards.settingsRenderPipeline(unProcessedText)
+
 	// Happens to be infinite loop fix it.
-	let unProcessedLineSplit = pStandards.settingsRenderPipeline(unProcessedText).split(`\n`)
+	let unProcessedLineSplit = settingsPipelineResult.split(`\n`)
 	unProcessedLineSplit.forEach(function(line){
 		if(unProcessedMethodName = methodPattern.exec(line)){
 			unProcessedMethodNameArray[_unProcessedMethodNameArrayCounter] = unProcessedMethodName
@@ -61,10 +63,10 @@ export async function performPreProcessing(textDocument: lsp.TextDocument): Prom
 	let higherOrderMethods = unProcessedMethodNameArray.filter(item => unProcessedClassMethodNames.indexOf(item[1]) < 0);
 
 	if(higherOrderMethods.length > 0) {
-		processedText = pStandards.methodBehaviour(pStandards.settingsRenderPipeline(unProcessedText))
+		processedText = pStandards.methodBehaviour(settingsPipelineResult)
 		setBehaviours(false,true)
 	} else {
-		processedText = pStandards.setupBehaviour(pStandards.settingsRenderPipeline(unProcessedText))
+		processedText = pStandards.setupBehaviour(settingsPipelineResult)
 		setBehaviours(true,false)
 	}
 
