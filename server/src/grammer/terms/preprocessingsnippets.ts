@@ -21,8 +21,8 @@ import java.lang.*\;
 export let reduceLineDefaultBehaviour = 14 
 export let reduceLineMethodBehaviour = 13 
 
-let sizePattern = /(size)\([ ]*[0-9]+[ ]*\,[ ]*[0-9]+[ ]*\)\;/
-let fullScreenPattern = /(fullScreen)\(\)\;/
+let sizePattern = /(size)\([ ]*[0-9]+[ ]*\,[ ]*[0-9]+[ ]*\,*[ ]*[A-Z 0-9]{0,}[ ]*\)\;/
+let fullScreenPattern = /(fullScreen)\([ ]*[A-Z 0-9]{0,}[ ]*\,*[ ]*[0-9]*[ ]*\)\;/
 let smoothPattern = /(smooth)\([ ]*[0-9]+[ ]*\)\;/
 let noSmoothPatterns = /(noSmooth)\(\)\;/
 
