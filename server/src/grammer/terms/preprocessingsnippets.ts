@@ -63,12 +63,6 @@ ${preprocessingFooter()}
 	return processedText
 }
 
-export function mapperPipeline(){
-	// Handle PApplet conversions such as float() to PApplet.parseFloat()
-	// Provide Access Specifiers
-	// handle floating points and doubles
-}
-
 // Handle size(), fullScreen(), smooth() & noSmooth()
 // Takes in Unprocessed Text and returns UnProcessed Text with the `settings` lines stripped out
 export function settingsRenderPipeline(unProcessedTest: String): String {
@@ -103,7 +97,16 @@ export function settingsRenderPipeline(unProcessedTest: String): String {
 	recordLine.forEach(function(line){
 		newUnProcessedText = `${newUnProcessedText}\n${line}`
 	})
+	newUnProcessedText = mapperPipeline(newUnProcessedText)
 	return newUnProcessedText
+}
+
+export function mapperPipeline(newUnProcessedText: String): string{
+	let localUnProcessedText = newUnProcessedText.replace(/([0-9]+\.[0-9]+)/g,'$1f')
+	conversionTuples.forEach(function(tuple){
+		localUnProcessedText = localUnProcessedText.replace(tuple[0],tuple[1])
+	})
+	return localUnProcessedText
 }
 
 export function disableSettingsBeforeParse() {
@@ -146,3 +149,11 @@ PApplet.main(\"${defaultClassName}\");
 }`
 	return generatedFooter
 }
+
+let conversionTuples : [RegExp,string][] = [
+	[/(float\()/g,"PApplet.parseFloat("],
+	[/(boolean\()/g,"PApplet.parseBoolean("],
+	[/(byte\()/g,"PApplet.parseByte("],
+	[/(char\()/g,"PApplet.parseChar("],
+	[/(int\()/g,"PApplet.parseInt("],
+]
