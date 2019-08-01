@@ -21,6 +21,8 @@ export const reader = new JavaClassFileReader();
 // exec(`mv ${__dirname.substring(0,__dirname.length-4)}/src/processing/class ${__dirname}/processing`)
 exec(`unzip -o ${__dirname.substring(0,__dirname.length-4)}/src/processing/jar/core.jar -d ${__dirname}/processing/extractor`)
 exec(`unzip -o ${__dirname.substring(0,__dirname.length-4)}/src/processing/jar/custom.jar -d ${__dirname}/processing/custom`)
+exec(`unzip -o ${__dirname.substring(0,__dirname.length-4)}/src/processing/insights.zip -d ${__dirname}/processing`)
+exec(`ls ${__dirname}/processing/insights | tee ${__dirname}/processing/insightcontainer/insightlist.txt`)
 exec(`ls ${__dirname}/processing/custom | tee ${__dirname}/processing/customcontainer/custom.txt`)
 exec(`ls ${__dirname}/processing/extractor/processing/core | tee ${__dirname}/processing/container/core.txt`)
 exec(`ls ${__dirname}/processing/extractor/processing/awt | tee ${__dirname}/processing/container/awt.txt`)

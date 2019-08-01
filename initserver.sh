@@ -36,6 +36,7 @@ mkdir container
 mkdir custom
 mkdir customcontainer
 mkdir extractor
+mkdir insightscontainer
 echo "${GREEN}Server setup successful.!${NC}"
 
 echo "${RED}Cooking Processing Core${NC}"
