@@ -3,7 +3,7 @@ import { CompletionItemKind, CompletionParams, TextDocument } from 'vscode-langu
 import * as preprocessing from './preprocessing'
 import * as pStandards from './grammer/terms/preprocessingsnippets'
 import * as parser from './parser';
-import { MethodBodyContext, ClassOrInterfaceTypeContext, VariableDeclaratorIdContext} from 'java-ast/dist/parser/JavaParser';
+import { MethodBodyContext, ClassOrInterfaceTypeContext, VariableDeclaratorIdContext, BlockContext, TypeTypeOrVoidContext, PrimitiveTypeContext} from 'java-ast/dist/parser/JavaParser';
 import { ErrorNode } from 'antlr4ts/tree/ErrorNode';
 import * as astUtils from './astutils'
 import * as model from './grammer/terms/model'
@@ -239,16 +239,16 @@ export function decideCompletionMethods(_textDocumentParams: CompletionParams, l
 	// line starts from `0`
 	let currentLineInWorkSpace = _textDocumentParams.position.line
 
-	parser.wholeAST.forEach(function(node, index){
+	parser.tokenArray.forEach(function(node, index){
 
-		if(node[0] instanceof MethodBodyContext){
-			lineStartMethodBody[_methodCounter] = node[0]._start.line
-			lineEndMethodBody[_methodCounter] = node[0]._stop!.line
+		if(node[1] instanceof BlockContext && node[0].text == `{`) {
+			lineStartMethodBody[_methodCounter] = node[1]._start.line
+			lineEndMethodBody[_methodCounter] = node[1]._stop!.line
 			_methodCounter += 1
 		}
 
-		if(node[0] instanceof ErrorNode){
-			avoidLineAuto[_avoidCounter] = node[0]._symbol.line
+		if(node[1] instanceof TypeTypeOrVoidContext || node[1] instanceof PrimitiveTypeContext) {
+			avoidLineAuto[_avoidCounter] = node[1]._start.line
 			_avoidCounter += 1
 		}
 
