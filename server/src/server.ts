@@ -105,11 +105,10 @@ export let latestChangesInTextDoc: TextDocument
 documents.onDidChangeContent(change => {
 	latestChangesInTextDoc = change.document
 	preprocessing.performPreProcessing(change.document)
-	// Hover disabled for now
-	// hover.checkforHoverContents(change.document)
 	// Diagnostics diabled since Auto completion is IP
 	diagnostics.checkForRealtimeDiagnostics(change.document)
-	// updateCompletionList(change.document);
+	// Hover disabled for now
+	// hover.checkforHoverContents(change.document)
 });
 
 connection.onDidChangeWatchedFiles(_change => {
@@ -127,13 +126,8 @@ connection.onCompletion(
 connection.onCompletionResolve(
 	(item: CompletionItem): CompletionItem => {
 		// use `item.label`
-		if (item.data === 1) {
-			item.detail = 'Field Details';
-			item.documentation = 'Field Documentation';
-		} else {
-			item.detail = 'Field Details';
-			item.documentation = 'Field Documentation';
-		}
+		item.detail = 'Field Details';
+		item.documentation = 'Field Documentation';
 		return item;
 	}
 );

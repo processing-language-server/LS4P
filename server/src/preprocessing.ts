@@ -63,10 +63,10 @@ export async function performPreProcessing(textDocument: lsp.TextDocument): Prom
 	let higherOrderMethods = unProcessedMethodNameArray.filter(item => unProcessedClassMethodNames.indexOf(item[1]) < 0);
 
 	if(higherOrderMethods.length > 0) {
-		processedText = pStandards.methodBehaviour(settingsPipelineResult)
+		processedText = pStandards.methodBehaviour(pStandards.settingsRenderPipeline(unProcessedText))
 		setBehaviours(false,true)
 	} else {
-		processedText = pStandards.setupBehaviour(settingsPipelineResult)
+		processedText = pStandards.setupBehaviour(pStandards.settingsRenderPipeline(unProcessedText))
 		setBehaviours(true,false)
 	}
 

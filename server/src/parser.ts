@@ -3,7 +3,6 @@ import { ParseTree } from 'antlr4ts/tree/ParseTree'
 import * as diagnostics from './diagnostics';
 import { TextDocument } from 'vscode-languageserver';
 import * as pStandards from './grammer/terms/preprocessingsnippets'
-import * as astUtils from './astutils'
 const childProcess = require('child_process');
 
 // Tuple -> current Node, Parent Node

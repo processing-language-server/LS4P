@@ -18,7 +18,7 @@ const fs = require('fs');
 // Array because there can be multiple error nodes
 // Defaults to "NO"
 let errorNodeContents: String[] = []
-let errorNodeLine: number[] = []
+export let errorNodeLine: number[] = []
 let errorNodeReasons: String[] = []
 let errorNodeCount = 0
 let totalErrorCount = 0
