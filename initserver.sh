@@ -37,15 +37,28 @@ mkdir custom
 mkdir customcontainer
 mkdir extractor
 mkdir insightscontainer
+mkdir lspinsights
 echo "${GREEN}Server setup successful.!${NC}"
 
 echo "${RED}Cooking Processing Core${NC}"
 # extracting Processing core classes
 cd ..
+mkdir logs
 cd ..
 cd ..
 mkdir pcore
-unzip ./server/src/processing/jar/core.jar -d ./pcore
+unzip -o ./server/src/processing/lspinsights.zip -d ./server/out/processing/lspinsights
+ls ./server/out/processing/lspinsights | tee ./server/out/processing/insightscontainer/insightlist.txt
+unzip -o ./server/src/processing/jar/custom.jar -d ./server/out/processing/custom
+ls ./server/out/processing/custom | tee ./server/out/processing/customcontainer/custom.txt
+unzip -o ./server/src/processing/jar/core.jar -d ./pcore
+unzip -o ./server/src/processing/jar/core.jar -d ./server/out/processing/extractor
+ls ./server/out/processing/extractor/processing/core | tee ./server/out/processing/container/core.txt
+ls ./server/out/processing/extractor/processing/awt | tee ./server/out/processing/container/awt.txt
+ls ./server/out/processing/extractor/processing/data | tee ./server/out/processing/container/data.txt
+ls ./server/out/processing/extractor/processing/event | tee ./server/out/processing/container/event.txt
+ls ./server/out/processing/extractor/processing/javafx | tee ./server/out/processing/container/javafx.txt
+ls ./server/out/processing/extractor/processing/opengl | tee ./server/out/processing/container/opengl.txt
 echo "${GREEN}Core setup successful.!${NC}"
 
 echo "${RED}Setting up Enviromental Varibales${NC}"

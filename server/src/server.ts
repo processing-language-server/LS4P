@@ -44,7 +44,7 @@ connection.onInitialize((params: InitializeParams) => {
 				resolveProvider: true,
 				triggerCharacters: [ '.' ]
 			},
-			// hoverProvider: true
+			hoverProvider: true
 		}
 	};
 });
@@ -108,7 +108,7 @@ documents.onDidChangeContent(change => {
 	// Diagnostics diabled since Auto completion is IP
 	diagnostics.checkForRealtimeDiagnostics(change.document)
 	// Hover disabled for now
-	// hover.checkforHoverContents(change.document)
+	hover.checkforHoverContents(change.document)
 });
 
 connection.onDidChangeWatchedFiles(_change => {

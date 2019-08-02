@@ -14,11 +14,11 @@ export let insightMap: [string,string][] = new Array();
 let _insightCounter = 0
 
 try{
-	let data = fs.readFileSync(`${__dirname}/processing/insightcontainer/insightlist.txt`, 'utf-8')
+	let data = fs.readFileSync(`${__dirname}/processing/insightscontainer/insightlist.txt`, 'utf-8')
 	let inisghtSpitMap = data.split('\n')
 	inisghtSpitMap.forEach(function(value: string){
 		if(value.includes(`.xml`)){
-			let tempfileRead = fs.readFileSync(`${__dirname}/processing/insights/${value}`, 'utf-8') as string
+			let tempfileRead = fs.readFileSync(`${__dirname}/processing/lspinsights/${value}`, 'utf-8') as string
 			let mainDescription: string
 			try{
 				mainDescription = (tempfileRead.split("<description><![CDATA[")[1]).split("]]></description>")[0]

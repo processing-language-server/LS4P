@@ -3,33 +3,13 @@ import { CompletionItemKind, CompletionParams, TextDocument } from 'vscode-langu
 import * as preprocessing from './preprocessing'
 import * as pStandards from './grammer/terms/preprocessingsnippets'
 import * as parser from './parser';
-import { MethodBodyContext, ClassOrInterfaceTypeContext, VariableDeclaratorIdContext, BlockContext, TypeTypeOrVoidContext, PrimitiveTypeContext} from 'java-ast/dist/parser/JavaParser';
-import { ErrorNode } from 'antlr4ts/tree/ErrorNode';
+import { ClassOrInterfaceTypeContext, VariableDeclaratorIdContext, BlockContext, TypeTypeOrVoidContext, PrimitiveTypeContext} from 'java-ast/dist/parser/JavaParser';
 import * as astUtils from './astutils'
 import * as model from './grammer/terms/model'
-import { ParseTree } from 'antlr4ts/tree/ParseTree';
-const exec = require('child_process').execSync;
 const fs = require('fs');
 const { JavaClassFileReader } = require('java-class-tools')
 
 export const reader = new JavaClassFileReader();
-
-// exec(`mkdir ${__dirname}/processing/extractor`)
-// exec(`mkdir ${__dirname}/processing/container`)
-// exec(`mkdir ${__dirname}/processing/custom`)
-// exec(`mkdir ${__dirname}/processing/customcontainer`)
-// exec(`mv ${__dirname.substring(0,__dirname.length-4)}/src/processing/class ${__dirname}/processing`)
-exec(`unzip -o ${__dirname.substring(0,__dirname.length-4)}/src/processing/jar/core.jar -d ${__dirname}/processing/extractor`)
-exec(`unzip -o ${__dirname.substring(0,__dirname.length-4)}/src/processing/jar/custom.jar -d ${__dirname}/processing/custom`)
-exec(`unzip -o ${__dirname.substring(0,__dirname.length-4)}/src/processing/insights.zip -d ${__dirname}/processing`)
-exec(`ls ${__dirname}/processing/insights | tee ${__dirname}/processing/insightcontainer/insightlist.txt`)
-exec(`ls ${__dirname}/processing/custom | tee ${__dirname}/processing/customcontainer/custom.txt`)
-exec(`ls ${__dirname}/processing/extractor/processing/core | tee ${__dirname}/processing/container/core.txt`)
-exec(`ls ${__dirname}/processing/extractor/processing/awt | tee ${__dirname}/processing/container/awt.txt`)
-exec(`ls ${__dirname}/processing/extractor/processing/data | tee ${__dirname}/processing/container/data.txt`)
-exec(`ls ${__dirname}/processing/extractor/processing/event | tee ${__dirname}/processing/container/event.txt`)
-exec(`ls ${__dirname}/processing/extractor/processing/javafx | tee ${__dirname}/processing/container/javafx.txt`)
-exec(`ls ${__dirname}/processing/extractor/processing/opengl | tee ${__dirname}/processing/container/opengl.txt`)
 
 let extractionModules = [
 	`${__dirname}/processing/container/core.txt`, 
