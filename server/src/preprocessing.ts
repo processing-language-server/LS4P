@@ -4,6 +4,7 @@ import * as parser from './parser'
 import { parse } from 'java-ast'
 import { ParseTree } from 'antlr4ts/tree/ParseTree'
 import { MethodDeclarationContext } from 'java-ast/dist/parser/JavaParser';
+import * as log from './scripts/syslogs'
 
 export let defaultBehaviourEnable = false
 export let methodBehaviourEnable = false
@@ -30,6 +31,7 @@ export async function performPreProcessing(textDocument: lsp.TextDocument): Prom
 	// TODO: Handle preprocessing Properly: - Done
 	// case 1 -> class and a method inside it without a method in the plain sketch
 	// case 2 -> class and a method inside it with a method in the plain sketch
+	// This is done by constructing parse tree even before preprocessing to find whether the method is inside a class or not
 
 	let unProcessedWorkSpaceChildren = parse(unProcessedText)
 
@@ -51,7 +53,6 @@ export async function performPreProcessing(textDocument: lsp.TextDocument): Prom
 
 	let settingsPipelineResult = pStandards.settingsRenderPipeline(unProcessedText)
 
-	// Happens to be infinite loop fix it.
 	let unProcessedLineSplit = settingsPipelineResult.split(`\n`)
 	unProcessedLineSplit.forEach(function(line){
 		if(unProcessedMethodName = methodPattern.exec(line)){
@@ -65,9 +66,11 @@ export async function performPreProcessing(textDocument: lsp.TextDocument): Prom
 	if(higherOrderMethods.length > 0) {
 		processedText = pStandards.methodBehaviour(pStandards.settingsRenderPipeline(unProcessedText))
 		setBehaviours(false,true)
+		log.writeLog(`[[BEHAVIOUR]] - Method Behaviour`)
 	} else {
 		processedText = pStandards.setupBehaviour(pStandards.settingsRenderPipeline(unProcessedText))
 		setBehaviours(true,false)
+		log.writeLog(`[[BEHAVIOUR]] - SetupDraw Behaviour`)
 	}
 
 	parser.parseAST(processedText as string, textDocument)

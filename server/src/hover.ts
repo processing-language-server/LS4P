@@ -5,6 +5,7 @@ import { Hover } from 'vscode-languageserver';
 import { parse } from 'java-ast'
 import { ParseTree } from 'antlr4ts/tree/ParseTree'
 import { errorNodeLine } from './diagnostics'
+import * as log from './scripts/syslogs'
 
 let tempAST: [ParseTree][] = new Array();
 let _tempCounter = -1
@@ -52,6 +53,7 @@ export async function checkforHoverContents(textDocument: lsp.TextDocument): Pro
 					hoverResult = scheduleHover(textDocument, params, errorLine)
 				})
 			}
+			log.writeLog(`Hover Invoked`)
 			return hoverResult
 		}
 	)

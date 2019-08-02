@@ -8,6 +8,7 @@ import {
 	CompletionParams,
 	TextDocument
 } from 'vscode-languageserver';
+import * as log from './scripts/syslogs'
 
 import * as completion from './completion'
 import * as diagnostics from './diagnostics'
@@ -50,6 +51,7 @@ connection.onInitialize((params: InitializeParams) => {
 });
 
 connection.onInitialized(() => {
+	log.writeLog(`Server initialized`)
 	if (hasConfigurationCapability) {
 		connection.client.register(DidChangeConfigurationNotification.type, undefined);
 	}
@@ -70,6 +72,7 @@ let globalSettings: ExampleSettings = defaultSettings;
 let documentSettings: Map<string, Thenable<ExampleSettings>> = new Map();
 
 connection.onDidChangeConfiguration(change => {
+	log.writeLog(`Config change event occured`)
 	if (hasConfigurationCapability) {
 		documentSettings.clear();
 	} else {
@@ -103,6 +106,7 @@ documents.onDidClose(e => {
 export let latestChangesInTextDoc: TextDocument
 
 documents.onDidChangeContent(change => {
+	log.writeLog(`Content change event occured`)
 	latestChangesInTextDoc = change.document
 	preprocessing.performPreProcessing(change.document)
 	// Diagnostics diabled since Auto completion is IP

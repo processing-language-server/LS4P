@@ -55,7 +55,7 @@ export function parseAST(processedText: string, textDocument: TextDocument) {
 	diagnostics.cookCompilationDiagnostics(processedText, `${__dirname}/compile/${pStandards.defaultClassName}.java`)
 
 
-	console.log("Parsed Successfully.!")
+	log.writeLog("Parse Tree construction Successfully")
 }
 
 function extractTokens(gotOne: ParseTree){

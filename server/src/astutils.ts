@@ -1,5 +1,6 @@
 import { ParseTree } from 'antlr4ts/tree/ParseTree'
 import { ClassDeclarationContext, VariableDeclaratorIdContext, MethodDeclarationContext } from 'java-ast/dist/parser/JavaParser';
+import * as log from './scripts/syslogs'
 
 export let memberNames: string[] = []
 export let numberOfMembers = 0
@@ -36,6 +37,7 @@ export function constructClassParams(tokenArr: [ParseTree, ParseTree][]){
 			numberOfFields += 1
 		}
 	})
+	log.writeLog(`Local Class completion Invoked`)
 }
 
 export function clearClassName(){

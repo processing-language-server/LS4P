@@ -6,6 +6,7 @@ import * as parser from './parser';
 import { ClassOrInterfaceTypeContext, VariableDeclaratorIdContext, BlockContext, TypeTypeOrVoidContext, PrimitiveTypeContext} from 'java-ast/dist/parser/JavaParser';
 import * as astUtils from './astutils'
 import * as model from './grammer/terms/model'
+import * as log from './scripts/syslogs'
 const fs = require('fs');
 const { JavaClassFileReader } = require('java-class-tools')
 
@@ -330,6 +331,8 @@ export function decideCompletionMethods(_textDocumentParams: CompletionParams, l
 
 	model.clearVaribaleDeclarationContext()
 	model.clearLocalClassDeclarators()
+
+	log.writeLog(`AutoCompletion invoked`)
 
 	return resultantCompletionItem
 }

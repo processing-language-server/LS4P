@@ -11,6 +11,7 @@ import * as server from './server'
 import * as parser from './parser'
 import * as preProcessingClass from './preprocessing'
 import * as pStandards from './grammer/terms/preprocessingsnippets'
+import * as log from './scripts/syslogs'
 
 const fs = require('fs');
 
@@ -134,6 +135,7 @@ export function cookCompilationDiagnostics(processedText: string, pwd: String){
 		if(data == ''){
 			// No Error on Compilation
 			setErrorNodeBackToDefault()
+			log.writeLog(`No error on Compilation`)
 		} else {
 			setErrorNodeBackToDefault()
 			let tempSplit = data.split('\n')
@@ -166,6 +168,9 @@ export function cookCompilationDiagnostics(processedText: string, pwd: String){
 				}
 			})
 			// Place a break point
+			log.writeLog(`[[ERR]] - Compiler throws errors check \`server\/out\/compile\/error\.txt\``)
 		}
-	} catch(e) {}
+	} catch(e) {
+		log.writeLog(`[[ERR]] - Problem with cooking diagnostics`)
+	}
 }
