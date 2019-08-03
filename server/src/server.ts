@@ -6,7 +6,9 @@ import {
 	DidChangeConfigurationNotification,
 	CompletionItem,
 	CompletionParams,
-	TextDocument
+	TextDocument,
+	TextDocumentPositionParams,
+	Definition
 } from 'vscode-languageserver';
 import * as log from './scripts/syslogs'
 
@@ -45,7 +47,8 @@ connection.onInitialize((params: InitializeParams) => {
 				resolveProvider: true,
 				triggerCharacters: [ '.' ]
 			},
-			hoverProvider: true
+			hoverProvider: true,
+			definitionProvider : true
 		}
 	};
 });
@@ -118,6 +121,24 @@ documents.onDidChangeContent(change => {
 connection.onDidChangeWatchedFiles(_change => {
 	connection.console.log('We received an file change event');
 });
+
+connection.onDefinition(
+	(_textDocumentParams: TextDocumentPositionParams): Definition => {
+		return {
+			uri: _textDocumentParams.textDocument.uri,
+			range: {
+				start: {
+					line: 0,
+					character: 0
+				},
+				end: {
+					line: 0,
+					character: 3
+				}
+			}
+		}
+	}
+)
 
 // Perform auto-completion -> Deligated tp `completion.ts`
 connection.onCompletion(
