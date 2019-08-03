@@ -17,8 +17,7 @@
 		"vscode": "^1.23.0"
 	},
 	"activationEvents": [
-		"onLanguage:processing",
-		"onCommand:extension.processing"
+		"onLanguage:processing"
 	],
 	"main": "./client/out/extension",
 	"contributes": {

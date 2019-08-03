@@ -8,7 +8,13 @@ import {
 	CompletionParams,
 	TextDocument,
 	TextDocumentPositionParams,
-	Definition
+	Definition,
+	CodeLensParams,
+	CodeLens,
+	Location,
+	ReferenceParams,
+	RenameParams,
+	WorkspaceEdit
 } from 'vscode-languageserver';
 import * as log from './scripts/syslogs'
 
@@ -48,7 +54,12 @@ connection.onInitialize((params: InitializeParams) => {
 				triggerCharacters: [ '.' ]
 			},
 			hoverProvider: true,
-			definitionProvider : true
+			definitionProvider : true,
+			codeLensProvider : {
+				resolveProvider: true
+			},
+			referencesProvider: true,
+			renameProvider: true
 		}
 	};
 });
@@ -122,6 +133,7 @@ connection.onDidChangeWatchedFiles(_change => {
 	connection.console.log('We received an file change event');
 });
 
+// Implementation for `goto definition` goes here
 connection.onDefinition(
 	(_textDocumentParams: TextDocumentPositionParams): Definition => {
 		return {
@@ -133,12 +145,116 @@ connection.onDefinition(
 				},
 				end: {
 					line: 0,
-					character: 3
+					character: 5
 				}
 			}
 		}
 	}
 )
+
+// Implementation for finding references
+connection.onReferences(
+	(_referenceParams: ReferenceParams): Location[] => {
+		return [
+			{
+				uri: _referenceParams.textDocument.uri,
+				range: {
+					start: {
+						line: 0,
+						character: 0
+					},
+					end: {
+						line: 0,
+						character: 10
+					}
+				}
+			}
+		]
+	}
+)
+
+// Implementation of `code-lens` goes here
+connection.onCodeLens(
+	(_codeLensParams: CodeLensParams): CodeLens[] => {
+		return [
+			{
+				command: {
+					title: `1 Reference`,
+					command: `processing.command.findReferences`,
+					arguments: [
+						{
+							uri: _codeLensParams.textDocument.uri,
+							lineNumber: 0,
+							column: 0
+						}
+					]
+				},
+				range: {
+					start: {
+						line: 0,
+						character: 0
+					},
+					end: {
+						line: 0,
+						character: 3
+					}
+				},
+				data: {
+					uri: _codeLensParams.textDocument.uri,
+					lineNumber: 0,
+					column: 0
+				}
+			}
+		]
+	}
+)
+
+// Implementation for Renaming References
+connection.onRenameRequest(
+	(_renameParams: RenameParams): WorkspaceEdit | null => {
+		// return {
+		// 	changes:{
+		// 		uri: [
+		// 			{
+		// 				range: {
+		// 					start: {
+		// 						line: 0,
+		// 						character: 0
+		// 					},
+		// 					end: {
+		// 						line: 0,
+		// 						character: 5
+		// 					}
+		// 				},
+		// 				newText: `heyoh`
+		// 			}
+		// 		]
+		// 	}
+		// }
+		// return {
+		// 	documentChanges: [
+		// 		{
+		// 			textDocument: 1,
+		// 			edits: {
+		// 				range: {
+		// 					start: {
+		// 						line: 0,
+		// 						character: 0
+		// 					},
+		// 					end: {
+		// 						line: 0,
+		// 						character: 5
+		// 					}
+		// 				},
+		// 				newText: `heyoh`
+		// 			}
+		// 		}
+		// 	]
+		// }
+		return null
+	}
+)
+
 
 // Perform auto-completion -> Deligated tp `completion.ts`
 connection.onCompletion(

@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { workspace, ExtensionContext,commands,window } from 'vscode';
+import * as vscode from 'vscode';
 const childProcess = require('child_process');
 
 import {
@@ -11,7 +11,7 @@ import {
 
 let client: LanguageClient;
 
-export function activate(context: ExtensionContext) {
+export function activate(context: vscode.ExtensionContext) {
 	
 	let serverModule = context.asAbsolutePath(
 		path.join('server', 'out', 'server.js')
@@ -32,7 +32,7 @@ export function activate(context: ExtensionContext) {
 	let clientOptions: LanguageClientOptions = {
 		documentSelector: [{ scheme: 'file', language: 'processing' }],
 		synchronize: {
-			fileEvents: workspace.createFileSystemWatcher('**/.clientrc')
+			fileEvents: vscode.workspace.createFileSystemWatcher('**/.clientrc')
 		}
 	};
 
@@ -43,20 +43,25 @@ export function activate(context: ExtensionContext) {
 		clientOptions
 	);
 
-	let disposable = commands.registerCommand('extension.processing', () => {
+	let disposable = vscode.commands.registerCommand('extension.processing', () => {
 		// Running the Sketch entered in Extension Host
-		window.showInformationMessage(`Running Processing Sketch.!`);
+		vscode.window.showInformationMessage(`Running Processing Sketch.!`);
 		try{
 			// exec(`mkdir client/out/class`)
 			childProcess.exec(`cp ${__dirname.substring(0,__dirname.length-11)}/server/out/compile/** ${__dirname}/class`)
 			childProcess.exec(`cd ${__dirname.substring(0,__dirname.length-11)}/client/out/class ; java ProcessingDefault`)
 		} catch(e){
-			window.showInformationMessage(`Error occured while running sketch.!`);
+			vscode.window.showInformationMessage(`Error occured while running sketch.!`);
 		}
 
 	});
 
+	let referenceDisposable = vscode.commands.registerCommand('processing.command.findReferences', (...args: any[]) => {
+		vscode.commands.executeCommand('editor.action.findReferences', vscode.Uri.file(args[0].uri.substring(7,args[0].uri.length)), new vscode.Position(args[0].lineNumber,args[0].column));
+	})
+
 	context.subscriptions.push(disposable);
+	context.subscriptions.push(referenceDisposable)
 
 	client.start();
 }
