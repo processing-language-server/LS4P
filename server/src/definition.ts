@@ -4,8 +4,9 @@ import { ParseTree } from 'antlr4ts/tree/ParseTree'
 import * as log from './scripts/syslogs'
 import * as preprocessing from './preprocessing'
 import * as pstandard from './grammer/terms/preprocessingsnippets'
-import { Range, Definition } from 'vscode-languageserver'
+import { Definition } from 'vscode-languageserver'
 import * as parser from './parser'
+import * as javaSpecific from './grammer/terms/javaspecific'
 import { ClassDeclarationContext, VariableDeclaratorIdContext, MethodDeclarationContext } from 'java-ast/dist/parser/JavaParser';
 
 let currentTempAST: [ParseTree][] = new Array();
@@ -39,12 +40,15 @@ export function scheduleLookUpDefinition(receivedUri: string,lineNumber: number,
 
 	parser.tokenArray.forEach(function(token){
 		if(token[1] instanceof ClassDeclarationContext){
-			foundDeclaration[_foundDeclarationCount] = [`class`, token[0].text, token[0].payload._line-(adjustOffset+1), token[0].payload._charPositionInLine]
-			_foundDeclarationCount +=1
+			if(!(javaSpecific.TOP_LEVEL_KEYWORDS.indexOf(token[0].text) > -1)){
+				foundDeclaration[_foundDeclarationCount] = [`class`, token[0].text, token[0].payload._line-(adjustOffset+1), token[0].payload._charPositionInLine]
+				_foundDeclarationCount +=1
+			}
 		} else if(token[1] instanceof VariableDeclaratorIdContext){
 			foundDeclaration[_foundDeclarationCount] = [`var`, token[0].text, token[0].payload._line-(adjustOffset+1), token[0].payload._charPositionInLine]
 			_foundDeclarationCount +=1
 		} else if(token[1] instanceof MethodDeclarationContext){
+			// TODO: conflict in `_charPositionInLine` due to addition of `public` infront during preprocessing -> tabs should also be handled
 			foundDeclaration[_foundDeclarationCount] = [`method`, token[0].text, token[0].payload._line-(adjustOffset+1), token[0].payload._charPositionInLine]
 			_foundDeclarationCount +=1
 		}
