@@ -60,7 +60,7 @@ export async function checkforHoverContents(textDocument: lsp.TextDocument): Pro
 }
 
 function scheduleHover(textDocument: lsp.TextDocument, params: lsp.TextDocumentPositionParams, errorLine: number = -10): lsp.Hover | null {
-	if(errorLine-1 != params.position.line){
+	if(errorLine - 1 != params.position.line){
 		let text = textDocument.getText();
 		let splitHover = text.split(`\n`)
 		let currentLine = splitHover[params.position.line]

@@ -14,14 +14,16 @@ import {
 	Location,
 	ReferenceParams,
 	RenameParams,
-	WorkspaceEdit
+	WorkspaceEdit,
+	Range
 } from 'vscode-languageserver';
-import * as log from './scripts/syslogs'
 
 import * as completion from './completion'
 import * as diagnostics from './diagnostics'
 import * as hover from './hover'
 import * as preprocessing from './preprocessing'
+import * as log from './scripts/syslogs'
+import * as definition from './definition'
 
 export let connection = createConnection(ProposedFeatures.all);
 
@@ -135,20 +137,8 @@ connection.onDidChangeWatchedFiles(_change => {
 
 // Implementation for `goto definition` goes here
 connection.onDefinition(
-	(_textDocumentParams: TextDocumentPositionParams): Definition => {
-		return {
-			uri: _textDocumentParams.textDocument.uri,
-			range: {
-				start: {
-					line: 0,
-					character: 0
-				},
-				end: {
-					line: 0,
-					character: 5
-				}
-			}
-		}
+	(_textDocumentParams: TextDocumentPositionParams): Definition | null => {
+		return definition.scheduleLookUpDefinition( _textDocumentParams.textDocument.uri,_textDocumentParams.position.line,_textDocumentParams.position.character)
 	}
 )
 
@@ -184,32 +174,32 @@ connection.onCodeLens(
 					arguments: [
 						{
 							uri: _codeLensParams.textDocument.uri,
+							// Line Number and Column of the keyword for which the code lens has to be invoked
 							lineNumber: 0,
-							column: 0
+							column: 10
 						}
 					]
 				},
 				range: {
+					// Position of `n Reference`
+					// line -> n+1
+					// char -> n+1
+					// This is because LSP is 0 based and workspace is 1 based
 					start: {
 						line: 0,
 						character: 0
 					},
 					end: {
 						line: 0,
-						character: 3
+						character: 0
 					}
-				},
-				data: {
-					uri: _codeLensParams.textDocument.uri,
-					lineNumber: 0,
-					column: 0
 				}
 			}
 		]
 	}
 )
 
-// Implementation for Renaming References
+// Implementation for Renaming References - WIP
 connection.onRenameRequest(
 	(_renameParams: RenameParams): WorkspaceEdit | null => {
 		// return {
@@ -254,7 +244,6 @@ connection.onRenameRequest(
 		return null
 	}
 )
-
 
 // Perform auto-completion -> Deligated tp `completion.ts`
 connection.onCompletion(
