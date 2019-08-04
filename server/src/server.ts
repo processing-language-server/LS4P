@@ -14,8 +14,7 @@ import {
 	Location,
 	ReferenceParams,
 	RenameParams,
-	WorkspaceEdit,
-	Range
+	WorkspaceEdit
 } from 'vscode-languageserver';
 
 import * as completion from './completion'
@@ -24,6 +23,8 @@ import * as hover from './hover'
 import * as preprocessing from './preprocessing'
 import * as log from './scripts/syslogs'
 import * as definition from './definition'
+import * as lens from './lens'
+import * as reference from './references'
 
 export let connection = createConnection(ProposedFeatures.all);
 
@@ -138,64 +139,23 @@ connection.onDidChangeWatchedFiles(_change => {
 // Implementation for `goto definition` goes here
 connection.onDefinition(
 	(_textDocumentParams: TextDocumentPositionParams): Definition | null => {
-		return definition.scheduleLookUpDefinition( _textDocumentParams.textDocument.uri,_textDocumentParams.position.line,_textDocumentParams.position.character)
+		return definition.scheduleLookUpDefinition(_textDocumentParams.textDocument.uri,_textDocumentParams.position.line,_textDocumentParams.position.character)
 	}
 )
 
 // Implementation for finding references
 connection.onReferences(
-	(_referenceParams: ReferenceParams): Location[] => {
-		return [
-			{
-				uri: _referenceParams.textDocument.uri,
-				range: {
-					start: {
-						line: 0,
-						character: 0
-					},
-					end: {
-						line: 0,
-						character: 10
-					}
-				}
-			}
-		]
+	(_referenceParams: ReferenceParams): Location[] | null => {
+		// _referenceParams.position.line, _referenceParams.position.character -> lineNumber, column from the arguments sent along with the command in the code lens
+		return reference.scheduleLookUpReference(_referenceParams)
 	}
 )
 
+// Refresh codeLens for every change in the input stream
 // Implementation of `code-lens` goes here
 connection.onCodeLens(
-	(_codeLensParams: CodeLensParams): CodeLens[] => {
-		return [
-			{
-				command: {
-					title: `1 Reference`,
-					command: `processing.command.findReferences`,
-					arguments: [
-						{
-							uri: _codeLensParams.textDocument.uri,
-							// Line Number and Column of the keyword for which the code lens has to be invoked
-							lineNumber: 0,
-							column: 10
-						}
-					]
-				},
-				range: {
-					// Position of `n Reference`
-					// line -> n+1
-					// char -> n+1
-					// This is because LSP is 0 based and workspace is 1 based
-					start: {
-						line: 0,
-						character: 0
-					},
-					end: {
-						line: 0,
-						character: 0
-					}
-				}
-			}
-		]
+	(_codeLensParams: CodeLensParams): CodeLens[] | null => {
+		return lens.scheduleLookUpLens(_codeLensParams)
 	}
 )
 
