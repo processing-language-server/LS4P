@@ -33,7 +33,7 @@ export function scheduleLookUpLens(_codeLensParams: CodeLensParams): CodeLens[] 
 			_lensDeclarationCount +=1
 		} else if(token[1] instanceof MethodDeclarationContext) {
 			// TODO: conflict in `_charPositionInLine` due to addition of `public` infront during preprocessing -> tabs should also be handled
-			lensDeclaration[_lensDeclarationCount] = [`method`, token[0].text, token[0].payload._line-(adjustOffset+1), token[0].payload._charPositionInLine]
+			lensDeclaration[_lensDeclarationCount] = [`method`, token[0].text, token[0].payload._line-(adjustOffset+1), token[0].payload._charPositionInLine - 3]
 			_lensDeclarationCount +=1
 		}
 	})
@@ -90,7 +90,8 @@ function findReferenceNumber(tokenName: string): number{
 			referenceCount += 1
 		}
 	})
-	return referenceCount
+	// excluding the source reference
+	return referenceCount - 1
 }
 
 

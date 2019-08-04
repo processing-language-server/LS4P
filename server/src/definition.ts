@@ -49,7 +49,7 @@ export function scheduleLookUpDefinition(receivedUri: string,lineNumber: number,
 			_foundDeclarationCount +=1
 		} else if(token[1] instanceof MethodDeclarationContext){
 			// TODO: conflict in `_charPositionInLine` due to addition of `public` infront during preprocessing -> tabs should also be handled
-			foundDeclaration[_foundDeclarationCount] = [`method`, token[0].text, token[0].payload._line-(adjustOffset+1), token[0].payload._charPositionInLine]
+			foundDeclaration[_foundDeclarationCount] = [`method`, token[0].text, token[0].payload._line-(adjustOffset+1), token[0].payload._charPositionInLine - 3]
 			_foundDeclarationCount +=1
 		}
 	})

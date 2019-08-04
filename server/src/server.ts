@@ -147,7 +147,8 @@ connection.onDefinition(
 connection.onReferences(
 	(_referenceParams: ReferenceParams): Location[] | null => {
 		// _referenceParams.position.line, _referenceParams.position.character -> lineNumber, column from the arguments sent along with the command in the code lens
-		return reference.scheduleLookUpReference(_referenceParams)
+		// return reference.scheduleLookUpReference(_referenceParams)
+		return null
 	}
 )
 
@@ -155,7 +156,8 @@ connection.onReferences(
 // Implementation of `code-lens` goes here
 connection.onCodeLens(
 	(_codeLensParams: CodeLensParams): CodeLens[] | null => {
-		return lens.scheduleLookUpLens(_codeLensParams)
+		// return lens.scheduleLookUpLens(_codeLensParams)
+		return null
 	}
 )
 
