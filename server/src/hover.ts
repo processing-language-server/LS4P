@@ -14,6 +14,10 @@ let _tempCounter = -1
 export let insightMap: [string,string][] = new Array();
 let _insightCounter = 0
 
+// Regular expression used to strip out the html tags from the description
+const startardTagRegex = /<[/]*\w+>/g
+const shortHandedRegex = /<\w+[ ]*[/]+>/g
+
 try{
 	let data = fs.readFileSync(`${__dirname}/processing/insightscontainer/insightlist.txt`, 'utf-8')
 	let inisghtSpitMap = data.split('\n')
@@ -23,6 +27,8 @@ try{
 			let mainDescription: string
 			try{
 				mainDescription = (tempfileRead.split("<description><![CDATA[")[1]).split("]]></description>")[0]
+				mainDescription = mainDescription.replace(startardTagRegex,``)
+				mainDescription = mainDescription.replace(shortHandedRegex,``)
 			} catch(e){
 				mainDescription = "Unable to find insights"
 			}
