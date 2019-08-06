@@ -48,7 +48,7 @@ export async function checkForRealtimeDiagnostics(processedTextDocument: TextDoc
 					}
 				},
 				message: `Error found`,
-				source: `Error in Source File`
+				source: `in Source File`
 			}
 			if (server.hasDiagnosticRelatedInformationCapability) {
 				diagnostic.relatedInformation = [
@@ -66,6 +66,65 @@ export async function checkForRealtimeDiagnostics(processedTextDocument: TextDoc
 	})
 	server.connection.sendDiagnostics({ uri: processedTextDocument.uri, diagnostics });
 }
+
+function setErrorNodeBackToDefault(){
+	errorNodeContents = []
+	errorNodeLine = []
+	errorNodeCount = 0
+	totalErrorCount = 0
+}
+
+export function cookCompilationDiagnostics(processedText: string, pwd: String){
+	// If one error is fixed it's not popped from stack - check
+	try {  
+		let data = fs.readFileSync(`${__dirname}/compile/error.txt`, 'utf-8')
+		if(data == ''){
+			// No Error on Compilation
+			setErrorNodeBackToDefault()
+			log.writeLog(`No error on Compilation`)
+		} else if(data.split(`:`)[0] == `Note`){
+			// Compilation warning
+			setErrorNodeBackToDefault()
+			log.writeLog(`Compilation warning encountered`)
+		} else {
+			setErrorNodeBackToDefault()
+			let tempSplit = data.split('\n')
+			let tempoErrorCount = tempSplit[tempSplit.length-2]
+			let tempo2ErrorCount = tempoErrorCount.split(" ")
+			totalErrorCount = +tempo2ErrorCount[0]
+			
+			tempSplit.forEach(function(line:String, index: number){
+				if(line.includes(`${pwd}`)){
+					let innerSplit = line.split(":")
+					// Handling line number based on current Behaviour - since preprocessing is done
+					if(preProcessingClass.defaultBehaviourEnable){
+						errorNodeLine[errorNodeCount] = +innerSplit[1] - pStandards.reduceLineDefaultBehaviour
+					} else if(preProcessingClass.methodBehaviourEnable){
+						errorNodeLine[errorNodeCount] = +innerSplit[1] - pStandards.reduceLineMethodBehaviour
+					}
+					let localIndex = index + 1
+					errorNodeReasons[errorNodeCount] = line.split("error:")[1]
+					while(true){
+						if(tempSplit[localIndex].includes(`${pwd}`) || 
+							tempSplit[localIndex].includes(`error`) ||
+							tempSplit[localIndex].includes(`errors`)) {
+							break
+						} else {
+							errorNodeReasons[errorNodeCount]  = `${errorNodeReasons[errorNodeCount]}\n ${tempSplit[localIndex]}`
+							localIndex+=1
+						}
+					}
+					errorNodeCount += 1
+				}
+			})
+			// Place a break point
+			log.writeLog(`[[ERR]] - Compiler throws errors check \`server\/out\/compile\/error\.txt\``)
+		}
+	} catch(e) {
+		log.writeLog(`[[ERR]] - Problem with cooking diagnostics`)
+	}
+}
+
 
 // Depricated Diagnostics Reports - Replaced with compilation reports
 export function cookDiagnosticsReport(processedText: string){
@@ -119,58 +178,4 @@ export function cookDiagnosticsReport(processedText: string){
 			delete errorNodeReasons[index]
 		}
 	})
-}
-
-function setErrorNodeBackToDefault(){
-	errorNodeContents = []
-	errorNodeLine = []
-	errorNodeCount = 0
-	totalErrorCount = 0
-}
-
-export function cookCompilationDiagnostics(processedText: string, pwd: String){
-	// If one error is fixed it's not popped from stack - check
-	try {  
-		let data = fs.readFileSync(`${__dirname}/compile/error.txt`, 'utf-8')
-		if(data == ''){
-			// No Error on Compilation
-			setErrorNodeBackToDefault()
-			log.writeLog(`No error on Compilation`)
-		} else {
-			setErrorNodeBackToDefault()
-			let tempSplit = data.split('\n')
-			let tempoErrorCount = tempSplit[tempSplit.length-2]
-			let tempo2ErrorCount = tempoErrorCount.split(" ")
-			totalErrorCount = +tempo2ErrorCount[0]
-			
-			tempSplit.forEach(function(line:String, index: number){
-				if(line.includes(`${pwd}`)){
-					let innerSplit = line.split(":")
-					// Handling line number based on current Behaviour - since preprocessing is done
-					if(preProcessingClass.defaultBehaviourEnable){
-						errorNodeLine[errorNodeCount] = +innerSplit[1] - pStandards.reduceLineDefaultBehaviour
-					} else if(preProcessingClass.methodBehaviourEnable){
-						errorNodeLine[errorNodeCount] = +innerSplit[1] - pStandards.reduceLineMethodBehaviour
-					}
-					let localIndex = index + 1
-					errorNodeReasons[errorNodeCount] = line.split("error:")[1]
-					while(true){
-						if(tempSplit[localIndex].includes(`${pwd}`) || 
-							tempSplit[localIndex].includes(`error`) ||
-							tempSplit[localIndex].includes(`errors`)) {
-								break
-						} else {
-							errorNodeReasons[errorNodeCount]  = `${errorNodeReasons[errorNodeCount]}\n ${tempSplit[localIndex]}`
-							localIndex+=1
-						}
-					}
-					errorNodeCount += 1
-				}
-			})
-			// Place a break point
-			log.writeLog(`[[ERR]] - Compiler throws errors check \`server\/out\/compile\/error\.txt\``)
-		}
-	} catch(e) {
-		log.writeLog(`[[ERR]] - Problem with cooking diagnostics`)
-	}
 }
