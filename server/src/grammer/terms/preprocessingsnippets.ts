@@ -163,4 +163,5 @@ let conversionTuples : [RegExp,string][] = [
 	[/(byte\()/g,"PApplet.parseByte("],
 	[/(char\()/g,"PApplet.parseChar("],
 	[/(int\()/g,"PApplet.parseInt("],
+	[/(color[ ]+)/g,"int "]
 ]

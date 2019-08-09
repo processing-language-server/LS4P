@@ -15,6 +15,7 @@ export let MCCount = 0
 
 export function constructClassParams(tokenArr: [ParseTree, ParseTree][]){
 	tokenArr.forEach(function(node, index){
+		// Contains all local class declarations, local memberVariable and memberFunction declaration
 		if(node[1] instanceof ClassDeclarationContext && node[0].text == `class`){
 			classNames[numberOfClasses] = tokenArr[index+1][0].text
 			numberOfClasses += 1
