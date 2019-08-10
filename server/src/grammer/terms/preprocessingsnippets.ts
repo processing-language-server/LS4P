@@ -77,8 +77,20 @@ export function settingsRenderPipeline(unProcessedTest: String): String {
 	let newUnProcessedText = ``
 	// Fixes method scoping for methods unassigned access specifiers
 	recordLine.forEach(function(line,index){
-		if(preprocessing.methodPattern.exec(line) && !(line.includes(`public`) || line.includes(`private`) || line.includes(`protected`))){
+		if(preprocessing.methodPattern.exec(line) && !(line.includes(`public`) || line.includes(`private`) || line.includes(`protected`) || preprocessing.ifelsePattern.exec(line))){
 			recordLine[index] = `public ${line.trimLeft()}`
+		}
+	})
+	let startEncountered = false
+	recordLine.forEach(function(line, index){
+		if(preprocessing.multiLineCommentComponents[0].exec(line)){
+			startEncountered = true
+		}
+		if(startEncountered) {
+			recordLine[index] = ``
+			if(preprocessing.multiLineCommentComponents[1].exec(line)){
+				startEncountered = false
+			}
 		}
 	})
 	recordLine.forEach(function(line){
@@ -113,6 +125,7 @@ export function mapperPipeline(newUnProcessedText: String): string{
 	conversionTuples.forEach(function(tuple){
 		localUnProcessedText = localUnProcessedText.replace(tuple[0],tuple[1])
 	})
+	localUnProcessedText = localUnProcessedText.replace(preprocessing.singleLineComment,``)
 	return localUnProcessedText
 }
 
@@ -163,5 +176,6 @@ let conversionTuples : [RegExp,string][] = [
 	[/(byte\()/g,"PApplet.parseByte("],
 	[/(char\()/g,"PApplet.parseChar("],
 	[/(int\()/g,"PApplet.parseInt("],
-	[/(color[ ]+)/g,"int "]
+	[/(color[ ]+)/g,"int "],
+	[/(color\[)/g,"int["]
 ]
