@@ -4,7 +4,7 @@
 
 > What's Processing Language Server
 
-<b>Processing Language Server</b> focuses on creating a [Language Server Protocol (LSP)](https://microsoft.github.io/language-server-protocol/) implementation for Processing Programming Language.
+<b>Processing Language Server</b> is a [Language Server Protocol (LSP)](https://microsoft.github.io/language-server-protocol/) implementation for Processing Programming Language. All the language specific features of Processing can now be extended to most the generic editors like VSCode, Atom, Sublime text and so on, by extending this Language Server. LS4P contains both Processing Language Server and a VSCode client. Refer [NEWCLIENT.md](https://github.com/processing-language-server/LS4P/tree/master/assets) to create your own Processing Language Client.
 
 ## Current Capabilities of LS4P
 
@@ -34,7 +34,6 @@
 	- This also works for method and class declarations
 	- An alternate way of invocation: right-click on the variable name and click <b>Go to Definition</b>.<br>
 	<p align="center">
-        <img src="assets/imgs/gotodefinition1.png"><br>
 		<img src="assets/imgs/gotodefinition2.png">
     </p>
 
@@ -49,7 +48,6 @@
 	- Can be invoked by clicking on the <b>n References</b> link that appears over all the Variable, Class or Method Declarations.
 	- An alternate way of invocation: Right-click on a Variable, Class or Method name and click <b>Peek References</b>.<br>
 	<p align="center">
-        <img src="assets/imgs/references1.png"><br>
 		<img src="assets/imgs/references2.png">
     </p>
 
