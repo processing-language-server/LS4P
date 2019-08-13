@@ -13,6 +13,8 @@ let unProcessedTokenArray : [ParseTree, ParseTree][] = new Array();
 let _unProcessedTokenCounter = -1
 
 export let methodPattern = /[\w\<\>\[\]]+\s+(\w+) *\([^\)]*\) *(\{)/g
+export let modifiedMethodPatternStart = /[\w\<\>\[\]]+\s+(\w+) *\([^\)]*\)[ ]*/g
+export let modifiedMethodPatternEnd = /[ ]*(\{)[ ]*/g
 export let ifelsePattern = /[ ]*(else)[ ]*(if)[ ]*\(/g
 export let singleLineComment = /\/\/([ ]*([A-Za-z\"\.])\w*)*/g
 export let multiLineCommentComponents = [
