@@ -126,6 +126,8 @@ export function mapperPipeline(newUnProcessedText: String): string{
 		localUnProcessedText = localUnProcessedText.replace(tuple[0],tuple[1])
 	})
 	localUnProcessedText = localUnProcessedText.replace(preprocessing.singleLineComment,``)
+	// localUnProcessedText = localUnProcessedText.replace(/[\']{1}/g,"\\\'")
+	localUnProcessedText = localUnProcessedText.replace(/[\"]{1}/g,"\\\"")
 	return localUnProcessedText
 }
 
@@ -165,7 +167,7 @@ ${settingsContext}
 function preprocessingFooter(): String{
 	let generatedFooter: String = `
 public static void main(String[] args) {
-PApplet.main(\"${defaultClassName}\");
+PApplet.main(\\\"${defaultClassName}\\\");
 }`
 	return generatedFooter
 }

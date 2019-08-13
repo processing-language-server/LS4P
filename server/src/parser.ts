@@ -37,7 +37,7 @@ export function parseAST(processedText: string, textDocument: TextDocument) {
 	// make sure to set .classpath for Processing core as environment variable
 	// This suites for raw java case - should handle for default and setupDraw case
 	try{
-		childProcess.execSync(`echo \'${processedText}\' > ${__dirname}/compile/${pStandards.defaultClassName}.java`)
+		childProcess.execSync(`echo \"${processedText}\" > ${__dirname}/compile/${pStandards.defaultClassName}.java`)
 		log.writeLog(`Java File creation successful`)
 	} catch(e) {
 		log.writeLog(`[[ERR]] - Error in Java File Creation`)

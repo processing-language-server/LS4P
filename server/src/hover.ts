@@ -36,7 +36,7 @@ try{
 				let tempKey = value.substring(0,value.length-4).split(`_`)
 				insightMap[_insightCounter] = [tempKey[1], `${tempKey[0]} - ${mainDescription}` as string]
 			} else {
-				insightMap[_insightCounter] = [value.substring(0,value.length-4), mainDescription]
+				insightMap[_insightCounter] = [value.substring(0,value.length-4), `${mainDescription.toLowerCase()}`]
 			}
 			_insightCounter += 1
 		}
