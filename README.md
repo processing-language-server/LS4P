@@ -4,15 +4,15 @@
 
 > What's Processing Language Server
 
-<b>Processing Language Server</b> is a [Language Server Protocol (LSP)](https://microsoft.github.io/language-server-protocol/) implementation for Processing Programming Language. All the language specific features of Processing can now be extended to most the generic editors like VSCode, Atom, Sublime text and so on, by extending this Language Server. LS4P contains both Processing Language Server and a VSCode client. Refer [NEWCLIENT.md](https://github.com/processing-language-server/LS4P/tree/master/assets) to create your own Processing Language Client.
-
-## Current Capabilities of LS4P
+<b>Processing Language Server</b> is a [Language Server Protocol (LSP)](https://microsoft.github.io/language-server-protocol/) implementation for Processing Programming Language. All the language specific features of Processing can now be extended to most the generic editors like VSCode, Atom, Sublime text and so on, by extending this Language Server. LS4P contains both Processing Language Server and a VSCode client. Refer [SETUP.md](https://github.com/processing-language-server/LS4P/blob/master/assets/SETUP.md) to setup Processing Language Server locally and [NEWCLIENT.md](https://github.com/processing-language-server/LS4P/blob/master/assets/NEWCLIENT.md) to create your own Processing Language Client.<br>
 
 * <b>Pre-note:</b> 
-	- Please make sure to save the sketch first, with the extension <b>.pde</b> to initiate the Processing Language Server.<br>
+	- Please make sure to save the sketch with the extension <b>.pde</b> to initiate the Processing Language Server.<br>
 	<p align="center">
         <img src="assets/imgs/prenote.png">
     </p>
+
+## Current Capabilities of LS4P
 
 * <b>Auto-completion:</b>
 	- Gives you context-aware suggestions to help you code faster. 
