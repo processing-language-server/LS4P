@@ -37,6 +37,12 @@ export function scheduleLookUpReference(_referenceParams: ReferenceParams): Loca
 	let multipleTokenOccurenceLocations: Location[] = new Array()
 	let _multipleTokenCount = 0
 
+	// let lineAdjustment = 0
+
+	// if(preprocessing.methodPattern.exec(currentLine)){
+	// 	lineAdjustment = 6 // "public " -> 6 characters added during pre-processing
+	// }
+
 	currentReferenceMap.forEach(function(word){
 		// params.position.character -> can be of any character, even a character within a word
 		if((word[1] <= _referenceParams.position.character) && (_referenceParams.position.character <= word[2])){
