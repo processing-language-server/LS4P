@@ -79,7 +79,7 @@ Once you're clear with basic constructs of LSP, let's dive into some of the spec
 ## Steps to port Language Server to Atom as a Client
 
 Following steps are for setting up a client in Atom.
-- *#1*
+- ***#1***
 	- Create an activation event that triggers the Processing Language Client.
 	- This is done in `packages.json` file,
 	```
@@ -99,14 +99,14 @@ Following steps are for setting up a client in Atom.
 		]
 	```
 
-- *#2*
+- ***#2***
 	- Create a `client.ts` file in `src` of your client directory.
-	- Obtain an instance of the `Language Client` using
+	- Declare the `Language Client` using
 	```
-	let languageClient = AutoLanguageClient  // Atom Client
+	let atomLanguageClient = AutoLanguageClient  // Atom Client
 	```
 
-- *#3*
+- ***#3***
 	- Creating `ServerOptions`
 	- This contains 2 parts
 		- Server Module
@@ -124,6 +124,22 @@ Following steps are for setting up a client in Atom.
 			```
 			- Currently LS4P uses Inter Process Communication .i.e., IPC. So it's highly recommended to use the same for the Atom client.
 
-- *#4*
+- ***#4***
 	- Creating `ClientOptions`
+	- This contains 3 parts
+		- Document Selector
+			- Make the client prepared to get responses from server when it encounters specific file type.
+		- Synchronizer
+			- Helps to make the file in sync with the server responses.
+
+- ***#5***
+	- Pass the `Server Options` and `Client Options` as the constructor parameters to initialise `atomLanguageClient` which was declared before.
+
+- ***#6***
+	- Start Listening to Server by registering a listener .i.e., `atomLanguageClient.start()` during the atom client activation event.
+
+- ***#7***
+	- Stop Listening to Server by unregistering a listener .i.e., `atomLanguageClient.end()` during the atom client deactivation event.
+
+This should setup and configure the Atom Client that uses Processing Language Server.
 
