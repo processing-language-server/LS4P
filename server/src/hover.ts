@@ -1,7 +1,7 @@
 import * as lsp from 'vscode-languageserver'
 import * as server from './server'
 const fs = require('fs');
-import { Hover } from 'vscode-languageserver';
+import { Hover, MarkedString } from 'vscode-languageserver';
 import { parse } from 'java-ast'
 import { ParseTree } from 'antlr4ts/tree/ParseTree'
 import { errorNodeLine } from './diagnostics'
@@ -36,7 +36,7 @@ try{
 				let tempKey = value.substring(0,value.length-4).split(`_`)
 				insightMap[_insightCounter] = [tempKey[1], `${tempKey[0]} - ${mainDescription}` as string]
 			} else {
-				insightMap[_insightCounter] = [value.substring(0,value.length-4), `${mainDescription.toLowerCase()}`]
+				insightMap[_insightCounter] = [value.substring(0,value.length-4), `${mainDescription}`]
 			}
 			_insightCounter += 1
 		}
@@ -88,11 +88,7 @@ function scheduleHover(textDocument: lsp.TextDocument, params: lsp.TextDocumentP
 				insightMap.forEach(function(value){
 					if(value[0] == word[0]){
 						hover = {
-							contents:{
-								language: 'processing',
-								value: value[1],
-								kind: "plaintext"
-							},
+							contents:MarkedString.fromPlainText(value[1]),
 							range: {
 								start: {
 									line: params.position.line,
