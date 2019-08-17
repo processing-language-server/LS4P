@@ -116,6 +116,13 @@ export function getDocumentSettings(resource: string): Thenable<ExampleSettings>
 	return result;
 }
 
+documents.onDidOpen(event => {
+	log.writeLog(`File Open / Tab switching event occured`)
+	latestChangesInTextDoc = event.document
+	preprocessing.performPreProcessing(event.document)
+	diagnostics.checkForRealtimeDiagnostics(event.document)
+});
+
 documents.onDidClose(e => {
 	documentSettings.delete(e.document.uri);
 });

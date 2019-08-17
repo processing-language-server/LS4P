@@ -95,7 +95,7 @@ export function settingsRenderPipeline(unProcessedTest: String): String {
 		if(	sizePattern.exec(recordLine[index]) || 
 			fullScreenPattern.exec(recordLine[index]) || 
 			smoothPattern.exec(recordLine[index]) ||
-			noSmoothPatterns.exec(recordLine[index])	){
+			noSmoothPatterns.exec(recordLine[index]) ){
 			moveToSettings(recordLine[index])
 		}
 	})
@@ -171,3 +171,7 @@ let conversionTuples : [RegExp,string][] = [
 	[/(color[ ]+)/g,"int "],
 	[/(color\[)/g,"int["]
 ]
+
+function getRandomInt(max: number) {
+	return Math.floor(Math.random() * Math.floor(max));
+}
