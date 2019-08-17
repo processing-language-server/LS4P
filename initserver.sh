@@ -71,3 +71,5 @@ echo "${GREEN}Variable setup successful.!${NC}"
 echo "${GREEN}Processing Language Server initialized.!${NC}"
 echo "${YELLOW}Note: Make sure you have JAVA 8 installed so that you can run Processing sketches${NC}"
 echo "${YELLOW}Note: Make sure you have class path setup as environmental variables that point to Processing Core${NC}"
+
+echo "${GREEN} Now Perform: Terminal -> Run Build Task...${NC}"

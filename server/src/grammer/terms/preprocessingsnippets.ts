@@ -92,19 +92,11 @@ export function settingsRenderPipeline(unProcessedTest: String): String {
 				startEncountered = false
 			}
 		}
-	})
-	recordLine.forEach(function(line){
-		if(sizePattern.exec(line)){
-			moveToSettings(line)
-		}
-		if(fullScreenPattern.exec(line)){
-			moveToSettings(line)
-		}
-		if(smoothPattern.exec(line)){
-			moveToSettings(line)
-		}
-		if(noSmoothPatterns.exec(line)){
-			moveToSettings(line)
+		if(	sizePattern.exec(recordLine[index]) || 
+			fullScreenPattern.exec(recordLine[index]) || 
+			smoothPattern.exec(recordLine[index]) ||
+			noSmoothPatterns.exec(recordLine[index])	){
+			moveToSettings(recordLine[index])
 		}
 	})
 	cookSettingsContext(unProcessedTest)
@@ -112,9 +104,7 @@ export function settingsRenderPipeline(unProcessedTest: String): String {
 		if(sizePattern.exec(line) || fullScreenPattern.exec(line) || smoothPattern.exec(line) || noSmoothPatterns.exec(line)){
 			recordLine[index] = ``
 		}
-	})
-	recordLine.forEach(function(line){
-		newUnProcessedText = `${newUnProcessedText}\n${line}`
+		newUnProcessedText = `${newUnProcessedText}\n${recordLine[index]}`
 	})
 	newUnProcessedText = mapperPipeline(newUnProcessedText)
 	return newUnProcessedText
@@ -177,7 +167,7 @@ let conversionTuples : [RegExp,string][] = [
 	[/(boolean\()/g,"PApplet.parseBoolean("],
 	[/(byte\()/g,"PApplet.parseByte("],
 	[/(char\()/g,"PApplet.parseChar("],
-	[/(int\()/g,"PApplet.parseInt("],
+	// [/(int\()/g,"PApplet.parseInt("],
 	[/(color[ ]+)/g,"int "],
 	[/(color\[)/g,"int["]
 ]
