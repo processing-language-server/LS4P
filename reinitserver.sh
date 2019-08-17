@@ -11,6 +11,7 @@ cd ../server
 rm -R ./node_modules
 rm -R ./out
 cd ..
+rm -R ./pcore
 echo "${GREEN}Server Cleanup successful.!${NC}"
 
 # Init Server

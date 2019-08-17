@@ -44,7 +44,8 @@ export function parseAST(processedText: string, textDocument: TextDocument) {
 	}
 
 	try{
-		childProcess.execSync(`javac ${__dirname}/compile/${pStandards.defaultClassName}.java -Xlint:none -Xstdout ${__dirname}/compile/error.txt`)
+		childProcess.execSync(`javac -classpath ${__dirname.substring(0,__dirname.length-11)}/pcore/ ${__dirname}/compile/${pStandards.defaultClassName}.java -Xlint:none -Xstdout ${__dirname}/compile/error.txt`,
+			{ stdio:[ 'inherit', 'pipe', 'pipe' ] })
 		log.writeLog(`Java File compilation successful`)
 	} catch(e) {
 		log.writeLog(`[[ERR]] - Error in Java File Compilation`)

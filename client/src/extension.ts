@@ -51,7 +51,7 @@ export function activate(context: vscode.ExtensionContext) {
 			let workspacePath = vscode.workspace.rootPath;
 			childProcess.exec(`cp -a ${workspacePath}/** ${__dirname}/class`)
 			childProcess.exec(`cp ${__dirname.substring(0,__dirname.length-11)}/server/out/compile/** ${__dirname}/class`)
-			childProcess.exec(`cd ${__dirname.substring(0,__dirname.length-11)}/client/out/class ; java ProcessingDefault`)
+			childProcess.exec(`cd ${__dirname.substring(0,__dirname.length-11)}/client/out/class ; java -classpath ${__dirname.substring(0,__dirname.length-11)}/server/src/processing/jar/core.jar: ProcessingDefault`)
 		} catch(e) {
 			vscode.window.showInformationMessage(`Error occured while running sketch.!`);
 		}

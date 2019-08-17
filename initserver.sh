@@ -62,8 +62,6 @@ ls ./server/out/processing/extractor/processing/opengl | tee ./server/out/proces
 echo "${GREEN}Core setup successful.!${NC}"
 
 echo "${RED}Setting up Enviromental Varibales${NC}"
-# extracting Processing core classes
-echo "export CLASSPATH=\$CLASSPATH:$(pwd)/pcore" >> ~/.bash_profile
 echo "export JAVA_HOME=\$(/usr/libexec/java_home -v 1.8)" >> ~/.bash_profile
 echo "${GREEN}Variable setup successful.!${NC}"
 
