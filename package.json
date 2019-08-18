@@ -17,13 +17,13 @@
 		"vscode": "^1.23.0"
 	},
 	"activationEvents": [
-		"onLanguage:processing"
+		"onLanguage:Processing"
 	],
 	"main": "./client/out/extension",
 	"contributes": {
 		"languages": [
 			{
-				"id": "processing",
+				"id": "Processing",
 				"extensions": [
 					".pde"
 				],
@@ -61,14 +61,14 @@
 		},
 		"grammars": [
 			{
-				"language": "processing",
+				"language": "Processing",
 				"scopeName": "source.pde",
 				"path": "./syntax/pde.tmLanguage.json"
 			}
 		],
 		"snippets": [
 			{
-				"language": "processing",
+				"language": "Processing",
 				"path": "./snippets.json"
 			}
 		],

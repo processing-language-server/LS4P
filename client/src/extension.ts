@@ -30,7 +30,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	
 	let clientOptions: LanguageClientOptions = {
-		documentSelector: [{ scheme: 'file', language: 'processing' }],
+		documentSelector: [{ scheme: 'file', language: 'Processing' }],
 		synchronize: {
 			fileEvents: vscode.workspace.createFileSystemWatcher('**/.clientrc')
 		}

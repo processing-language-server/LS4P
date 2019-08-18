@@ -154,8 +154,7 @@ connection.onDefinition(
 connection.onReferences(
 	(_referenceParams: ReferenceParams): Location[] | null => {
 		// _referenceParams.position.line, _referenceParams.position.character -> lineNumber, column from the arguments sent along with the command in the code lens
-		// return reference.scheduleLookUpReference(_referenceParams)
-		return null
+		return reference.scheduleLookUpReference(_referenceParams)
 	}
 )
 
@@ -171,10 +170,6 @@ connection.onCodeLens(
 // Implementation for Renaming References - WIP
 connection.onRenameRequest(
 	(_renameParams: RenameParams): WorkspaceEdit | null => {
-		// return {
-		// 	changes: {
-		// 	}
-		// }
 		return null
 	}
 )
@@ -191,7 +186,7 @@ connection.onCompletionResolve(
 	(item: CompletionItem): CompletionItem => {
 		// use `item.label`
 		item.detail = 'Field Details';
-		item.documentation = 'Field Documentation';
+		item.documentation = 'Hover to know Field Details';
 		return item;
 	}
 );
