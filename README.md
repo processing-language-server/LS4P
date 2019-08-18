@@ -40,7 +40,7 @@
 * <b>Hover Insights:</b>
 	- Hover mouse pointer over a keyword - this brings up a pop-up containing what that keyword means.<br>
 	<p align="center">
-        <img src="assets/imgs/hover.png">
+        <img src="assets/imgs/hover2.png">
     </p>
 
 * <b>Finding References:</b>
