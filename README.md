@@ -13,7 +13,7 @@
     </p>
 
 * <b>Activation Event:</b> 
-	- If you see <b>Processing</b> at the bottom status bar of vscode then it means that Processing Language Server is active.<br>
+	- If you see <b>Processing</b> in the bottom status bar of vscode then it means that Processing Language Server is active.<br>
 	<p align="center">
         <img src="assets/imgs/statusBar.png">
     </p>
