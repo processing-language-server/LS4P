@@ -7,13 +7,13 @@
 <b>Processing Language Server</b> is a [Language Server Protocol (LSP)](https://microsoft.github.io/language-server-protocol/) implementation for Processing Programming Language. All the language specific features of Processing can now be extended to most the generic editors like VSCode, Atom, Sublime text and so on, by extending this Language Server. LS4P contains both Processing Language Server and a VSCode client. Refer [SETUP.md](https://github.com/processing-language-server/LS4P/blob/master/assets/SETUP.md) to setup Processing Language Server locally and [NEWCLIENT.md](https://github.com/processing-language-server/LS4P/blob/master/assets/NEWCLIENT.md) to create your own Processing Language Client.<br>
 
 * <b>Pre-note:</b> 
-	- Please make sure to save the sketch with the extension <b>.pde</b> to initiate the Processing Language Server.<br>
+	- Save the sketch with the extension <b>.pde</b> to initiate the Processing Language Server.<br>
 	<p align="center">
         <img src="assets/imgs/prenote.png">
     </p>
 
 * <b>Activation Event:</b> 
-	- If you see <b>Processing</b> in the bottom status bar of vscode then it means that Processing Language Server is active.<br>
+	- <b>Processing</b> should appear in the status bar of vscode indicating Processing Language Server is active.<br>
 	<p align="center">
         <img src="assets/imgs/statusBar.png">
     </p>
