@@ -12,7 +12,7 @@
 		"url": "https://github.com/Microsoft/vscode-extension-samples"
 	},
 	"dependencies": {
-		"java": "^0.11.0",
+		"java": "^0.12.1",
 		"java-class-tools": "^1.3.1",
 		"vscode-languageserver": "^4.1.3"
 	},
