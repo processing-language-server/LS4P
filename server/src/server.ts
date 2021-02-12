@@ -17,6 +17,9 @@ import {
 	WorkspaceEdit
 } from 'vscode-languageserver';
 
+import { interval, Observable, of, Subject } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
+
 import * as completion from './completion'
 import * as diagnostics from './diagnostics'
 import * as hover from './hover'
@@ -116,6 +119,8 @@ export function getDocumentSettings(resource: string): Thenable<ExampleSettings>
 	return result;
 }
 
+export let latestChangesInTextDoc: TextDocument
+
 documents.onDidOpen(event => {
 	log.writeLog(`File Open / Tab switching event occured`)
 	latestChangesInTextDoc = event.document
@@ -124,20 +129,33 @@ documents.onDidOpen(event => {
 });
 
 documents.onDidClose(e => {
+	log.writeLog(`File Close event occured`)
 	documentSettings.delete(e.document.uri);
 });
 
-export let latestChangesInTextDoc: TextDocument
+let bufferInProgress = false
 
 documents.onDidChangeContent(change => {
-	log.writeLog(`Content change event occured`)
+	log.writeLog(`Outside -> Content change event occured`)
 	latestChangesInTextDoc = change.document
-	preprocessing.performPreProcessing(change.document)
-	// Diagnostics diabled since Auto completion is IP
-	diagnostics.checkForRealtimeDiagnostics(change.document)
-	// Hover disabled for now
+	if(!bufferInProgress)
+		initPreProcessDiagnostics()
 	hover.checkforHoverContents(change.document)
 });
+
+
+async function initPreProcessDiagnostics() {
+	bufferInProgress = true
+	await sleep(300);
+	log.writeLog(`Inside -> Content change event occured`)
+	preprocessing.performPreProcessing(latestChangesInTextDoc)
+	diagnostics.checkForRealtimeDiagnostics(latestChangesInTextDoc)
+	bufferInProgress = false
+}
+
+function sleep(ms: number) {
+	return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 connection.onDidChangeWatchedFiles(_change => {
 	connection.console.log('We received an file change event');
