@@ -5,7 +5,6 @@ import { TextDocument } from 'vscode-languageserver';
 import * as pStandards from './grammer/terms/preprocessingsnippets'
 import * as log from './scripts/syslogs'
 const childProcess = require('child_process');
-const fs = require('fs')
 
 // Tuple -> current Node, Parent Node
 export let tokenArray: [ParseTree, ParseTree][] = new Array();
@@ -38,7 +37,7 @@ export function parseAST(processedText: string, textDocument: TextDocument) {
 	// make sure to set .classpath for Processing core as environment variable
 	// This suites for raw java case - should handle for default and setupDraw case
 	try{
-		fs.writeFileSync(__dirname+"/compile/"+pStandards.defaultClassName+".java", processedText)
+		childProcess.execSync(`echo \"${processedText}\" > ${__dirname}/compile/${pStandards.defaultClassName}.java`)
 		log.writeLog(`Java File creation successful`)
 	} catch(e) {
 		log.writeLog(`[[ERR]] - Error in Java File Creation`)
