@@ -10,7 +10,7 @@
 		"url": "https://github.com/processing-language-server/LS4P"
 	},
 	"engines": {
-		"vscode": "^1.23.0"
+		"vscode": "^1.60.0"
 	},
 	"scripts": {
 		"update-vscode": "vscode-install",
