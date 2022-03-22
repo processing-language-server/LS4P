@@ -22,12 +22,12 @@ let extractionModules = [
 ]
 
 let extractionModuleType = [
-	'CORE',
-	'AWT',
-	'DATA',
-	'EVENT',
-	'JAVAFX',
-	'OPENGL'
+	'core',
+	'awt',
+	'data',
+	'event',
+	'javafx',
+	'opengl'
 ]
 
 let currentCompletionClass = `PApplet`
