@@ -157,7 +157,7 @@ ${settingsContext}
 function preprocessingFooter(): String{
 	let generatedFooter: String = `
 public static void main(String[] args) {
-PApplet.main(\\\"${defaultClassName}\\\");
+PApplet.main("${defaultClassName}");
 }`
 	return generatedFooter
 }
