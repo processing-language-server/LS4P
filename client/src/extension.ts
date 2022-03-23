@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
 const childProcess = require('child_process');
-
+const fs = require('fs')
 import {
 	LanguageClient,
 	LanguageClientOptions,
@@ -47,11 +47,21 @@ export function activate(context: vscode.ExtensionContext) {
 		// Running the Sketch entered in Extension Host
 		vscode.window.showInformationMessage(`Running Processing Sketch.!`);
 		try{
-			// exec(`mkdir client/out/class`)
-			let workspacePath = vscode.workspace.rootPath;
-			childProcess.exec(`cp -a ${workspacePath}/** ${__dirname}/class`)
-			childProcess.exec(`cp ${__dirname.substring(0,__dirname.length-11)}/server/out/compile/** ${__dirname}/class`)
-			childProcess.exec(`cd ${__dirname.substring(0,__dirname.length-11)}/client/out/class ; java -classpath ${__dirname.substring(0,__dirname.length-11)}/server/src/processing/jar/core.jar: ProcessingDefault`)
+
+			copyRecursiveSync(`${__dirname.substring(0,__dirname.length-11)}/server/out/compile/`, `${__dirname}/class`)
+			let workDir = `${__dirname.substring(0,__dirname.length-11)}/client/out/class`
+			let corePath = `${__dirname.substring(0,__dirname.length-11)}/server/src/processing/jar/core.jar`
+			let command
+			if (process.platform === 'win32') {
+				command =`java -cp ${corePath}; ProcessingDefault`
+				console.log("Windows environment, using -cp corePath \";\" as command")
+			}
+			else {
+				command = `java -cp ${corePath}: ProcessingDefault`
+				console.log("Linux/Mac environment, using -cp corePath \":\" as command")
+			}
+			childProcess.exec(command, {cwd: workDir})
+			
 		} catch(e) {
 			vscode.window.showInformationMessage(`Error occured while running sketch.!`);
 		}
@@ -74,3 +84,34 @@ export function deactivate(): Thenable<void> | undefined {
 	}
 	return client.stop();
 }
+
+/**
+ * Look ma, it's cp -R.
+ * @param {string} src  The path to the thing to copy.
+ * @param {string} dest The path to the new copy.
+ */
+
+ var copyRecursiveSync = function(src, dest) {
+
+	var exists = fs.existsSync(src);
+	var stats = exists && fs.statSync(src);
+	var isDirectory = exists && stats.isDirectory();
+
+	if (isDirectory) {
+		if(!fs.existsSync(src)) {
+	  		fs.mkdirSync(dest);
+		}
+
+	  fs.readdirSync(src).forEach(function(childItemName) {
+		copyRecursiveSync(path.join(src, childItemName),
+
+						  path.join(dest, childItemName));
+
+	  });
+
+	} else {
+	  fs.copyFileSync(src, dest);
+
+	}
+
+  };
