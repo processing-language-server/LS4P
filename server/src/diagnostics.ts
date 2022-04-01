@@ -12,6 +12,7 @@ import * as parser from './parser'
 import * as preProcessingClass from './preprocessing'
 import * as pStandards from './grammer/terms/preprocessingsnippets'
 import * as log from './scripts/syslogs'
+import * as sketch from './sketch';
 
 const fs = require('fs');
 
@@ -27,12 +28,30 @@ let totalErrorCount = 0
 // Diagnostics report based on Error Node
 export async function checkForRealtimeDiagnostics(processedTextDocument: TextDocument): Promise<void> {
 	let settings = await server.getDocumentSettings(processedTextDocument.uri);
-	let processedText = processedTextDocument.getText()
 	let problems = 0;
-	let diagnostics: Diagnostic[] = []
-	let m: RegExpMatchArray | null;
-	errorNodeLine.forEach(function(errorLine, index){
-		if(problems < settings.maxNumberOfProblems){
+	let errorLine : number = 0
+	let errorDocName : string = ''
+	let errorDocUri : string = ''
+
+	//Create a diagnostic report per .pde file (tab)
+	let fileDiagnostics = new Map<string,  Diagnostic[]>()
+	sketch.contents.forEach(function(value, key : string){
+		let emptyDiag : Diagnostic[] = []
+
+		fileDiagnostics.set(key, emptyDiag)
+	})
+	
+	errorNodeLine.forEach(function(javaErrorLine, index){
+		// Get the real error line number
+		if (sketch.transformMap.get(javaErrorLine)) {
+			errorLine = sketch.transformMap.get(javaErrorLine)!.lineNumber
+			errorDocName =  sketch.transformMap.get(javaErrorLine)!.fileName
+			errorDocUri = sketch.uri+errorDocName
+		}
+
+		let diagnostics = fileDiagnostics.get(errorDocName);
+
+		if(problems < settings.maxNumberOfProblems && diagnostics){
 			problems++;
 			let diagnostic: Diagnostic = {
 				severity: DiagnosticSeverity.Error,
@@ -54,7 +73,7 @@ export async function checkForRealtimeDiagnostics(processedTextDocument: TextDoc
 				diagnostic.relatedInformation = [
 					{
 						location: {
-							uri: processedTextDocument.uri,
+							uri: errorDocUri,
 							range: Object.assign({}, diagnostic.range)
 						},
 						message: `${errorNodeReasons[index]}`
@@ -62,9 +81,16 @@ export async function checkForRealtimeDiagnostics(processedTextDocument: TextDoc
 				];
 			}
 			diagnostics.push(diagnostic);
+			fileDiagnostics.set(errorDocName, diagnostics)
 		}
 	})
-	server.connection.sendDiagnostics({ uri: processedTextDocument.uri, diagnostics });
+
+	//Send all diagnostic reports to the client
+	for (let [file, diagnostics] of fileDiagnostics)  {
+		let fileUri = sketch.uri+file
+		server.connection.sendDiagnostics({uri: fileUri, diagnostics})
+	}
+	
 }
 
 function setErrorNodeBackToDefault(){

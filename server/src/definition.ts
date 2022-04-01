@@ -8,6 +8,7 @@ import { Definition } from 'vscode-languageserver'
 import * as parser from './parser'
 import * as javaSpecific from './grammer/terms/javaspecific'
 import { ClassDeclarationContext, VariableDeclaratorIdContext, MethodDeclarationContext } from 'java-ast/dist/parser/JavaParser';
+import * as sketch from './sketch'
 
 let currentTempAST: [ParseTree][] = new Array();
 let _currentTempCounter = -1
@@ -41,15 +42,15 @@ export function scheduleLookUpDefinition(receivedUri: string,lineNumber: number,
 	parser.tokenArray.forEach(function(token){
 		if(token[1] instanceof ClassDeclarationContext){
 			if(!(javaSpecific.TOP_LEVEL_KEYWORDS.indexOf(token[0].text) > -1)){
-				foundDeclaration[_foundDeclarationCount] = [`class`, token[0].text, token[0].payload._line-(adjustOffset+1), token[0].payload._charPositionInLine]
+				foundDeclaration[_foundDeclarationCount] = [`class`, token[0].text, token[0].payload._line-(adjustOffset), token[0].payload._charPositionInLine]
 				_foundDeclarationCount +=1
 			}
 		} else if(token[1] instanceof VariableDeclaratorIdContext){
-			foundDeclaration[_foundDeclarationCount] = [`var`, token[0].text, token[0].payload._line-(adjustOffset+1), token[0].payload._charPositionInLine]
+			foundDeclaration[_foundDeclarationCount] = [`var`, token[0].text, token[0].payload._line-(adjustOffset), token[0].payload._charPositionInLine]
 			_foundDeclarationCount +=1
 		} else if(token[1] instanceof MethodDeclarationContext){
 			// TODO: conflict in `_charPositionInLine` due to addition of `public` infront during preprocessing -> tabs should also be handled
-			foundDeclaration[_foundDeclarationCount] = [`method`, token[0].text, token[0].payload._line-(adjustOffset+1), token[0].payload._charPositionInLine - 3]
+			foundDeclaration[_foundDeclarationCount] = [`method`, token[0].text, token[0].payload._line-(adjustOffset), token[0].payload._charPositionInLine - 3]
 			_foundDeclarationCount +=1
 		}
 	})
@@ -61,15 +62,25 @@ export function scheduleLookUpDefinition(receivedUri: string,lineNumber: number,
 		if((word[1] <= charNumber) && (charNumber <= word[2])){
 			foundDeclaration.forEach(function(delarationName){
 				if(word[0] == delarationName[1]){
+
+					let lineNumberJavaFile = delarationName[2];
+					let diffLine : number = 0;
+					let docUri : string = '';
+					if (sketch.transformMap.get(lineNumberJavaFile)) {
+						diffLine = sketch.transformMap.get(lineNumberJavaFile)!.lineNumber
+						let docName =  sketch.transformMap.get(lineNumberJavaFile)!.fileName
+						docUri = sketch.uri+docName
+					}
+
 					finalDefinition = {
-						uri: receivedUri,
+						uri: docUri,
 						range:{
 							start: {
-								line: delarationName[2],
+								line: diffLine-1,
 								character: delarationName[3]
 							},
 							end: {
-								line: delarationName[2],
+								line: diffLine-1,
 								character: delarationName[3]+word[0].length
 							}
 						}
