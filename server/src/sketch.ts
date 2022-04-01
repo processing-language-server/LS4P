@@ -91,7 +91,7 @@ export function updateContent(changedDocument: lsp.TextDocument) {
 	for (let [fileName, fileContents] of contents) {
 		fileContents += '\n'
 
-		cookTransformDict(fileName, fileContents, bigCount)
+		bigCount = cookTransformDict(fileName, fileContents, bigCount)
 	}
 
 	return true
