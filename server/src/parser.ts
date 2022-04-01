@@ -53,7 +53,13 @@ export function parseAST(processedText: string, textDocument: TextDocument) {
 
 	// Wrote methods to handle Error in the Error Stream
 	// diagnostics.cookDiagnosticsReport(processedText)
-	diagnostics.cookCompilationDiagnostics(processedText, `${__dirname}/compile/${pStandards.defaultClassName}.java`)
+	let pwd
+	if (process.platform === 'win32') {
+		pwd =`${__dirname}\\compile\\${pStandards.defaultClassName}.java`
+	}else {
+		pwd = `${__dirname}/compile/${pStandards.defaultClassName}.java`
+	}
+	diagnostics.cookCompilationDiagnostics(processedText, pwd)
 
 
 	log.writeLog("Parse Tree construction Successfully")
