@@ -32,10 +32,30 @@
 		],
 		"commands": [
 			{
-				"command": "extension.processing",
-				"title": "Run Processing Sketch"
+				"command": "extension.processing.runSketch",
+				"title": "Run Processing Sketch",
+				"icon" : "./client/src/assets/play-arrow.svg"
+			},
+			{
+				"command": "extension.processing.stopSketch",
+				"title": "Run Processing Sketch",
+				"icon" : "./client/src/assets/stop-square.svg"
 			}
 		],
+		"menus": {
+			"editor/title": [
+				{
+					"command": "extension.processing.runSketch",
+					"group": "navigation",
+					"when": "!processing.runningSketch"
+				},
+				{
+					"command": "extension.processing.stopSketch",
+					"group": "navigation",
+					"when": "processing.runningSketch"
+				}
+			]
+		},
 		"configuration": {
 			"type": "object",
 			"title": "Processing configuration",
