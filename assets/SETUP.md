@@ -12,6 +12,14 @@
 - To run a Processing sketch - hit `Shift+cmd+P` and enter `Run Processing Sketch` and hit enter.
 - This should run the Processing Sketch.
 
+
+# required packages/software
+
+## Windows
+- [nodejs and npm](https://nodejs.org/en/download/)
+- [jdk](https://www.oracle.com/java/technologies/downloads/)
+
+**Imported:** Set path environment variable to nodejs, npm and jdk folders
 ## Issues
 
 - If you run into any issues, make sure to raise an Issue.
