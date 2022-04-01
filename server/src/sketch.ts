@@ -167,6 +167,38 @@ function getPathFromUri(uri : string) : string {
 }
 
 /**
+ * Appends the name and content of a .pde file (tab)
+ * to the content map of the sketch
+ * 
+ * @param uri Location to the file that needs adding
+ */
+export function addTab(uri: string) {
+	if (initialized) {
+		let fileName = pathM.basename(uri)
+		if (fileName.endsWith('.pde')) {
+			let tabContents = fs.readdirSync(path+fileName, 'utf-8')
+			contents.set(fileName, tabContents)
+		}
+	}
+}
+
+
+/**
+ * Deletes the name and content of a .pde file (tab)
+ * from the sketch content map
+ * 
+ * @param uri Location to the file that needs removing
+ */
+export function removeTab(uri: string) {
+	if (initialized) {
+		let fileName = pathM.basename(uri)
+		if (fileName.endsWith('.pde') && contents.has(fileName)) {
+			contents.delete(fileName)
+		}
+	}
+}
+
+/**
  * Transforms a path to a file uri
  * 
  * @param path Path of a file
