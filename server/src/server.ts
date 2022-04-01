@@ -14,7 +14,8 @@ import {
 	Location,
 	ReferenceParams,
 	RenameParams,
-	WorkspaceEdit
+	WorkspaceEdit,
+	FileChangeType
 } from 'vscode-languageserver';
 
 import { interval, Observable, of, Subject } from 'rxjs';
@@ -28,6 +29,7 @@ import * as log from './scripts/syslogs'
 import * as definition from './definition'
 import * as lens from './lens'
 import * as reference from './references'
+import * as sketch from './sketch';
 
 export let connection = createConnection(ProposedFeatures.all);
 
@@ -159,6 +161,22 @@ function sleep(ms: number) {
 
 connection.onDidChangeWatchedFiles(_change => {
 	connection.console.log('We received an file change event');
+
+	for (let i = 0; i < _change.changes.length; i++) {
+		const change = _change.changes[i];
+		
+		switch (change.type) {
+		  case FileChangeType.Created:
+			sketch.addTab(change.uri)
+			break;
+		  case FileChangeType.Deleted:
+			sketch.removeTab(change.uri)
+			break;
+		  default:
+			// do nothing
+			break;
+		}
+	}
 });
 
 // Implementation for `goto definition` goes here

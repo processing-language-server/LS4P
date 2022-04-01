@@ -5,6 +5,7 @@ import { parse } from 'java-ast'
 import { ParseTree } from 'antlr4ts/tree/ParseTree'
 import { MethodDeclarationContext } from 'java-ast/dist/parser/JavaParser';
 import * as log from './scripts/syslogs'
+import * as sketch from './sketch'
 
 export let defaultBehaviourEnable = false
 export let methodBehaviourEnable = false
@@ -23,7 +24,13 @@ export let multiLineCommentComponents = [
 ]
 
 export async function performPreProcessing(textDocument: lsp.TextDocument): Promise<void>{
-	let unProcessedText = textDocument.getText()
+	if (!sketch.initialized) {
+		sketch.initialize(textDocument);
+	}
+
+	sketch.updateContent(textDocument)
+	let unProcessedText = sketch.getContent()
+
 	let processedText: String
 	let unProcessedMethodName: RegExpExecArray | null
 	// Super set that contains all the methods in the workspace
