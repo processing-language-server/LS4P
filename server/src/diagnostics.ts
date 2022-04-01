@@ -96,11 +96,22 @@ export function cookCompilationDiagnostics(processedText: string, pwd: String){
 			tempSplit.forEach(function(line:String, index: number){
 				if(line.includes(`${pwd}`)){
 					let innerSplit = line.split(":")
+
+					// Windows paths have a colon after the drive letter
+					// Shifts the error colon by one in the array
+					let splitIndex
+					if(process.platform === 'win32') {
+						splitIndex = 2
+					}
+					else {
+						splitIndex = 1
+					}
+
 					// Handling line number based on current Behaviour - since preprocessing is done
 					if(preProcessingClass.defaultBehaviourEnable){
-						errorNodeLine[errorNodeCount] = +innerSplit[1] - pStandards.reduceLineDefaultBehaviour
+						errorNodeLine[errorNodeCount] = +innerSplit[splitIndex] - pStandards.reduceLineDefaultBehaviour
 					} else if(preProcessingClass.methodBehaviourEnable){
-						errorNodeLine[errorNodeCount] = +innerSplit[1] - pStandards.reduceLineMethodBehaviour
+						errorNodeLine[errorNodeCount] = +innerSplit[splitIndex] - pStandards.reduceLineMethodBehaviour
 					}
 					let localIndex = index + 1
 					errorNodeReasons[errorNodeCount] = line.split("error:")[1]
