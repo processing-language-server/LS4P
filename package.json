@@ -46,11 +46,13 @@
 			"editor/title": [
 				{
 					"command": "extension.processing.runSketch",
-					"group": "navigation"
+					"group": "navigation",
+					"when": "!processing.runningSketch"
 				},
 				{
 					"command": "extension.processing.stopSketch",
-					"group": "navigation"
+					"group": "navigation",
+					"when": "processing.runningSketch"
 				}
 			]
 		},

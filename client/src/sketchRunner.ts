@@ -122,6 +122,7 @@ export class SketchRunner implements vscode.Disposable {
 
 		this._bufferedOutputChannel.appendLine(`[Starting] Running processing sketch`);
 		this._outputChannel.show(false)
+		vscode.commands.executeCommand('setContext', 'processing.runningSketch', true)
 
 		if (this.isRunning) {
 			this.stop()
@@ -157,6 +158,8 @@ export class SketchRunner implements vscode.Disposable {
 	 * @returns Stopping state
 	 */
 	private stop(): Promise<boolean> {
+
+		vscode.commands.executeCommand('setContext', 'processing.runningSketch', false)
 
 		return new Promise((resolve, reject) => {
 		  if (!this.isRunning) {
