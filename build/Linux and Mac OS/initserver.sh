@@ -5,6 +5,7 @@ YELLOW='\033[0;1;33m'
 NC='\033[0m'
 
 echo "${RED}Installing required node modules...${NC}"
+cd ../../
 # install required node_modules
 npm install
 echo "${GREEN}Installation successful.!${NC}"
@@ -65,7 +66,7 @@ echo "${RED}Setting up Enviromental Varibales${NC}"
 echo "export JAVA_HOME=\$(/usr/libexec/java_home -v 1.8)" >> ~/.bash_profile
 echo "${GREEN}Variable setup successful.!${NC}"
 
-
+cd './build/Linux and Mac OS'
 echo "${GREEN}Processing Language Server initialized.!${NC}"
 echo "${YELLOW}Note: Make sure you have JAVA 8 installed so that you can run Processing sketches${NC}"
 echo "${YELLOW}Note: Make sure you have class path setup as environmental variables that point to Processing Core${NC}"
